@@ -120,7 +120,7 @@
             size="mini"
             type="text"
             icon="el-icon-edit"
-            :disabled="scope.row.status !== '草稿'"
+            :disabled="!(scope.row.status === '草稿' || scope.row.status === '待修改')"
             @click="handleSubmitContract(scope.row)"
             >提交</el-button
           >
@@ -128,7 +128,7 @@
             size="mini"
             type="text"
             icon="el-icon-edit"
-            :disabled="scope.row.status !== '草稿'"
+            :disabled="!(scope.row.status === '草稿' || scope.row.status === '待修改')"
             @click="handleUpdate(scope.row)"
             v-hasPermi="['system:contract:edit']"
             >修改</el-button
@@ -137,7 +137,7 @@
             size="mini"
             type="text"
             icon="el-icon-delete"
-            :disabled="scope.row.status !== '草稿'"
+            :disabled="!(scope.row.status === '草稿' || scope.row.status === '待修改')"
             @click="handleDelete(scope.row)"
             v-hasPermi="['system:contract:remove']"
             >删除</el-button
@@ -199,7 +199,7 @@
         <el-form-item label="甲方">
           <el-select
             placeholder="请指定甲方"
-            v-model="form.partyA"
+            v-model="form.partyAName"
             @change="handlePartAChange"
             @focus="getUserList"
           >
@@ -215,7 +215,7 @@
         <el-form-item label="乙方">
           <el-select
             placeholder="请指定乙方"
-            v-model="form.partyB"
+            v-model="form.partyBName"
             @change="handlePartBChange"
           >
             <el-option
@@ -225,6 +225,12 @@
               :value="item.userId"
             />
           </el-select>
+        </el-form-item>
+
+        <el-form-item label="双方意见" v-if="form.notifyInfoList && form.notifyInfoList.length > 0">
+          <p v-for="item in form.notifyInfoList">
+            {{ item.userName }} : {{ item.content }}
+          </p>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -299,6 +305,7 @@ export default {
 
   data() {
     return {
+
       partyA: null,
       partyB: null,
       userList: [
