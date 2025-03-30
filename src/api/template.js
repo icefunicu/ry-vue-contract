@@ -20,7 +20,7 @@ export function getTemplates(id) {
 // 新增【请填写功能名称】
 export function addTemplates(data) {
   return request({
-    url: '/templates',
+    url: '/contract/templates',
     method: 'post',
     data: data
   })
@@ -29,7 +29,7 @@ export function addTemplates(data) {
 // 修改【请填写功能名称】
 export function updateTemplates(data) {
   return request({
-    url: '/templates',
+    url: '/contract/templates',
     method: 'put',
     data: data
   })
