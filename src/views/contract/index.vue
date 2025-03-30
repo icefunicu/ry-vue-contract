@@ -120,12 +120,15 @@
             size="mini"
             type="text"
             icon="el-icon-edit"
+            :disabled="scope.row.status !== '草稿'"
             @click="handleSubmitContract(scope.row)"
-            >提交</el-button>
+            >提交</el-button
+          >
           <el-button
             size="mini"
             type="text"
             icon="el-icon-edit"
+            :disabled="scope.row.status !== '草稿'"
             @click="handleUpdate(scope.row)"
             v-hasPermi="['system:contract:edit']"
             >修改</el-button
@@ -134,6 +137,7 @@
             size="mini"
             type="text"
             icon="el-icon-delete"
+            :disabled="scope.row.status !== '草稿'"
             @click="handleDelete(scope.row)"
             v-hasPermi="['system:contract:remove']"
             >删除</el-button
@@ -364,19 +368,18 @@ export default {
   },
   methods: {
     handleSubmitContract(row) {
-      submitContract({id: row.id}).then((response) => {
+      submitContract({ id: row.id }).then((response) => {
         this.$modal.msgSuccess("提交成功");
         this.getList();
       });
     },
     getUserList() {
       this.loading = true;
-      listUser().then(response => {
-          this.userList = response.rows;
-          this.total = response.total;
-          this.loading = false;
-        }
-      );
+      listUser().then((response) => {
+        this.userList = response.rows;
+        this.total = response.total;
+        this.loading = false;
+      });
     },
     handleTemplateChange(e) {
       this.templateList.forEach((item) => {
@@ -493,7 +496,7 @@ export default {
 </script>
 
 <style lang="scss">
-.contract-content{
+.contract-content {
   white-space: nowrap;
 }
 </style>
