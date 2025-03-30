@@ -91,7 +91,12 @@
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="id" align="center" prop="id" />
       <el-table-column label="合同名称" align="center" prop="title" />
-      <el-table-column label="合同描述" align="center" prop="content" />
+      <el-table-column
+        label="合同内容"
+        align="center"
+        prop="content"
+        width="200"
+      />
       <el-table-column label="创建人" align="center" prop="createdBy" />
       <el-table-column label="合同状态" align="center" prop="status" />
       <el-table-column label="合同路径" align="center" prop="filePath" />
@@ -111,6 +116,12 @@
         class-name="small-padding fixed-width"
       >
         <template slot-scope="scope">
+          <el-button
+            size="mini"
+            type="text"
+            icon="el-icon-edit"
+            @click="handleSubmitContract(scope.row)"
+            >提交</el-button>
           <el-button
             size="mini"
             type="text"
@@ -142,7 +153,7 @@
     <!-- 添加【合同】对话框 -->
     <el-dialog
       :title="title"
-      :visible.sync="openAdd"
+      :visible.sync="open"
       width="1200px"
       append-to-body
     >
@@ -150,47 +161,7 @@
         <el-form-item label="合同标题" prop="title">
           <el-input v-model="form.title" placeholder="请输入合同标题" />
         </el-form-item>
-        <el-form-item label="合同描述" prop="content">
-          <editor v-model="form.content" :min-height="192" />
-        </el-form-item>
-        <el-form-item label="上传合同" prop="filePath">
-          <el-upload
-            class="upload-demo"
-            :on-exceed="handleExceed"
-            :file-list="fileList"
-          >
-            <el-button size="small" type="primary">点击上传</el-button>
-            <div slot="tip" class="el-upload__tip">
-              只能上传jpg/png文件，且不超过500kb
-            </div>
-          </el-upload>
-        </el-form-item>
-
-        <el-form-item label="合同状态" prop="status">
-          <el-select v-model="form.status" placeholder="请选择合同状态">
-            <el-option label="已发布" value="1" />
-            <el-option label="未发布" value="0" />
-          </el-select>
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="submitForm">确 定</el-button>
-        <el-button @click="cancel">取 消</el-button>
-      </div>
-    </el-dialog>
-
-    <!-- 修改【合同】对话框 -->
-    <el-dialog
-      :title="title"
-      :visible.sync="openUpdate"
-      width="1200px"
-      append-to-body
-    >
-      <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="合同标题" prop="title">
-          <el-input v-model="form.title" placeholder="请输入合同标题" />
-        </el-form-item>
-        <el-form-item label="合同描述" prop="content">
+        <el-form-item label="合同内容" prop="content">
           <Toolbar
             style="border-bottom: 1px solid #ccc"
             :editor="editor"
@@ -205,17 +176,51 @@
             @onCreated="onCreated"
           />
         </el-form-item>
-        <el-form-item label="上传合同" prop="filePath">
-          <el-upload
-            class="upload-demo"
-            :on-exceed="handleExceed"
-            :file-list="fileList"
+
+        <el-form-item label="合同模版">
+          <el-select
+            placeholder="请选择合同模版"
+            v-model="form.optionValue"
+            @change="handleTemplateChange"
           >
-            <el-button size="small" type="primary">上传修改后的合同</el-button>
-            <div slot="tip" class="el-upload__tip">
-              只能上传jpg/png文件，且不超过500kb
-            </div>
-          </el-upload>
+            <el-option
+              v-for="item in templateList"
+              :key="item.id"
+              :label="item.name"
+              :value="item.id"
+            />
+          </el-select>
+        </el-form-item>
+
+        <el-form-item label="甲方">
+          <el-select
+            placeholder="请指定甲方"
+            v-model="form.partyA"
+            @change="handlePartAChange"
+            @focus="getUserList"
+          >
+            <el-option
+              v-for="item in userList"
+              :key="item.userId"
+              :label="item.nickName"
+              :value="item.userId"
+            />
+          </el-select>
+        </el-form-item>
+
+        <el-form-item label="乙方">
+          <el-select
+            placeholder="请指定乙方"
+            v-model="form.partyB"
+            @change="handlePartBChange"
+          >
+            <el-option
+              v-for="item in userList"
+              :key="item.userId"
+              :label="item.nickName"
+              :value="item.userId"
+            />
+          </el-select>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -223,6 +228,51 @@
         <el-button @click="cancel">取 消</el-button>
       </div>
     </el-dialog>
+
+    <!-- 修改【合同】对话框
+    <el-dialog
+      :title="title"
+      :visible.sync="openUpdate"
+      width="1200px"
+      append-to-body
+    >
+      <el-form ref="form" :model="form" :rules="rules" label-width="80px">
+        <el-form-item label="合同标题" prop="title">
+          <el-input v-model="form.title" placeholder="请输入合同标题" />
+        </el-form-item>
+        <el-form-item label="合同内容" prop="content">
+          <Toolbar
+            style="border-bottom: 1px solid #ccc"
+            :editor="editor"
+            :defaultConfig="toolbarConfig"
+            :mode="mode"
+          />
+          <Editor
+            style="height: 500px; overflow-y: hidden"
+            v-model="form.content"
+            :defaultConfig="editorConfig"
+            :mode="mode"
+            @onCreated="onCreated"
+          />
+        </el-form-item>
+
+        <el-form-item label="合同模版">
+          <el-select placeholder="请选择合同模版" v-model="form.optionValue" @change="handleTemplateChange"
+          >
+            <el-option
+              v-for="item in templateList"
+              :key="item.id"
+              :label="item.name"
+              :value="item.id"
+            />
+          </el-select>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="submitForm">确 定</el-button>
+        <el-button @click="cancel">取 消</el-button>
+      </div>
+    </el-dialog> -->
   </div>
 </template>
 
@@ -233,7 +283,10 @@ import {
   delContract,
   addContract,
   updateContract,
+  submitContract,
 } from "@/api//contract";
+
+import { listUser } from "@/api/system/user.js";
 import { Editor, Toolbar } from "@wangeditor/editor-for-vue";
 
 export default {
@@ -242,8 +295,17 @@ export default {
 
   data() {
     return {
+      partyA: null,
+      partyB: null,
+      userList: [
+        { userId: 1, nickName: "甲方" },
+        { userId: 2, nickName: "乙方" },
+      ],
+      templateList: [
+        { id: 1, name: "合同模版1", content: "asdfasdf111" },
+        { id: 2, name: "合同模版2", content: "asdfasdf222" },
+      ],
       editor: null,
-      html: "<p>hello</p>",
       toolbarConfig: {},
       editorConfig: { placeholder: "请输入内容..." },
       mode: "default", // or 'simple'
@@ -264,8 +326,7 @@ export default {
       // 弹出层标题
       title: "",
       // 是否显示弹出层
-      openAdd: false,
-      openUpdate: false,
+      open: false,
       // 查询参数
       queryParams: {
         pageNum: 1,
@@ -285,14 +346,14 @@ export default {
           { required: true, message: "合同标题不能为空", trigger: "blur" },
         ],
         content: [
-          { required: true, message: "合同描述不能为空", trigger: "blur" },
+          { required: true, message: "合同内容不能为空", trigger: "blur" },
         ],
       },
     };
   },
   beforeDestroy() {
     const editor = this.editor;
-    if (editor == null) return;
+    if (!editor) return;
     editor.destroy(); // 组件销毁时，及时销毁编辑器
   },
   created() {
@@ -300,11 +361,30 @@ export default {
   },
   mounted() {
     // 模拟 ajax 请求，异步渲染编辑器
-    setTimeout(() => {
-      this.html = "<p>模拟 Ajax 异步设置内容 HTML</p>";
-    }, 1500);
   },
   methods: {
+    handleSubmitContract(row) {
+      submitContract({id: row.id}).then((response) => {
+        this.$modal.msgSuccess("提交成功");
+        this.getList();
+      });
+    },
+    getUserList() {
+      this.loading = true;
+      listUser().then(response => {
+          this.userList = response.rows;
+          this.total = response.total;
+          this.loading = false;
+        }
+      );
+    },
+    handleTemplateChange(e) {
+      this.templateList.forEach((item) => {
+        if (item.id === e) {
+          this.form.content = item.content;
+        }
+      });
+    },
     onCreated(editor) {
       this.editor = Object.seal(editor); // 一定要用 Object.seal() ，否则会报错
     },
@@ -319,9 +399,8 @@ export default {
     },
     // 取消按钮
     cancel() {
-      this.openAdd = false;
-      this.openUpdate = false;
       this.reset();
+      this.open = false;
     },
     // 表单重置
     reset() {
@@ -329,10 +408,7 @@ export default {
         id: null,
         title: null,
         content: null,
-        createdBy: null,
-        status: null,
-        filePath: null,
-        createdTime: null,
+        optionValue: null,
       };
       this.resetForm("form");
     },
@@ -355,7 +431,7 @@ export default {
     /** 新增按钮操作 */
     handleAdd() {
       this.reset();
-      this.openAdd = true;
+      this.open = true;
       this.title = "添加【合同】";
     },
     /** 修改按钮操作 */
@@ -364,7 +440,7 @@ export default {
       const id = row.id || this.ids;
       getContract(id).then((response) => {
         this.form = response.data;
-        this.openUpdate = true;
+        this.open = true;
         this.title = "修改【合同】";
       });
     },
@@ -415,3 +491,9 @@ export default {
   },
 };
 </script>
+
+<style lang="scss">
+.contract-content{
+  white-space: nowrap;
+}
+</style>

@@ -42,3 +42,20 @@ export function delContract(id) {
     method: 'delete'
   })
 }
+
+// 获取所有用户列表
+export function getAllUser() {
+  return request({
+    url: '/system/user/list',
+    method: 'get'
+  })
+}
+
+// 提交合同
+export function submitContract(data) {
+  return request({
+    url: '/contract/submit/',
+    method: 'post',
+    data: data
+  })
+}
