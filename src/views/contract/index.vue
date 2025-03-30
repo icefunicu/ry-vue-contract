@@ -1,13 +1,14 @@
 <template>
-  <div class="app-container">
-    <el-form
-      :model="queryParams"
-      ref="queryForm"
-      size="small"
-      :inline="true"
-      v-show="showSearch"
-      label-width="68px"
-    >
+  <div class="app-container contract-management">
+    <el-card class="search-card" shadow="hover">
+      <el-form
+        :model="queryParams"
+        ref="queryForm"
+        size="small"
+        :inline="true"
+        v-show="showSearch"
+        label-width="80px"
+      >
       <el-form-item label="合同标题" prop="title">
         <el-input
           v-model="queryParams.title"
@@ -28,9 +29,10 @@
           >重置</el-button
         >
       </el-form-item>
-    </el-form>
+      </el-form>
+    </el-card>
 
-    <el-row :gutter="10" class="mb8">
+    <el-row :gutter="20" class="mb8 action-bar">
       <el-col :span="1.5">
         <el-button
           type="primary"
@@ -83,22 +85,52 @@
       ></right-toolbar>
     </el-row>
 
-    <el-table
-      v-loading="loading"
-      :data="contractList"
-      @selection-change="handleSelectionChange"
-    >
+    <el-card class="table-card" shadow="hover">
+      <div slot="header" class="clearfix">
+        <span class="card-title">合同列表</span>
+      </div>
+      <el-table
+        v-loading="loading"
+        :data="contractList"
+        @selection-change="handleSelectionChange"
+        border
+        stripe
+        highlight-current-row
+        style="width: 100%"
+      >
       <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="id" align="center" prop="id" />
-      <el-table-column label="合同名称" align="center" prop="title" />
+      <el-table-column label="ID" align="center" prop="id" width="80" />
+      <el-table-column label="合同名称" align="center" prop="title">
+        <template slot-scope="scope">
+          <el-tooltip class="item" effect="dark" :content="scope.row.title" placement="top-start">
+            <span class="contract-title">{{ scope.row.title }}</span>
+          </el-tooltip>
+        </template>
+      </el-table-column>
       <el-table-column
         label="合同内容"
         align="center"
         prop="content"
         width="200"
-      />
-      <el-table-column label="创建人" align="center" prop="createdBy" />
-      <el-table-column label="合同状态" align="center" prop="status" />
+      >
+        <template slot-scope="scope">
+          <el-tooltip class="item" effect="dark" :content="scope.row.content" placement="top-start">
+            <div class="content-preview">{{ scope.row.content }}</div>
+          </el-tooltip>
+        </template>
+      </el-table-column>
+      <el-table-column label="创建人" align="center" prop="createdByName" />
+      <el-table-column label="合同状态" align="center" prop="status">
+        <template slot-scope="scope">
+          <el-tag
+            :type="statusTagType(scope.row.status)"
+            effect="plain"
+            size="medium"
+          >
+            {{ scope.row.status }}
+          </el-tag>
+        </template>
+      </el-table-column>
       <el-table-column label="合同路径" align="center" prop="filePath" />
       <el-table-column
         label="合同创建时间"
@@ -113,35 +145,39 @@
       <el-table-column
         label="操作"
         align="center"
-        class-name="small-padding fixed-width"
+        class-name="operation-column"
+        width="200"
       >
         <template slot-scope="scope">
           <el-button
             size="mini"
-            type="text"
-            icon="el-icon-edit"
+            type="primary"
+            icon="el-icon-check"
+            circle
             :disabled="!(scope.row.status === '草稿' || scope.row.status === '待修改')"
             @click="handleSubmitContract(scope.row)"
-            >提交</el-button
-          >
+            title="提交"
+          ></el-button>
           <el-button
             size="mini"
-            type="text"
+            type="success"
             icon="el-icon-edit"
+            circle
             :disabled="!(scope.row.status === '草稿' || scope.row.status === '待修改')"
             @click="handleUpdate(scope.row)"
             v-hasPermi="['system:contract:edit']"
-            >修改</el-button
-          >
+            title="修改"
+          ></el-button>
           <el-button
             size="mini"
-            type="text"
+            type="danger"
             icon="el-icon-delete"
+            circle
             :disabled="!(scope.row.status === '草稿' || scope.row.status === '待修改')"
             @click="handleDelete(scope.row)"
             v-hasPermi="['system:contract:remove']"
-            >删除</el-button
-          >
+            title="删除"
+          ></el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -152,7 +188,8 @@
       :page.sync="queryParams.pageNum"
       :limit.sync="queryParams.pageSize"
       @pagination="getList"
-    />
+      />
+    </el-card>
 
     <!-- 添加【合同】对话框 -->
     <el-dialog
@@ -160,12 +197,16 @@
       :visible.sync="open"
       width="1200px"
       append-to-body
+      custom-class="contract-dialog"
+      :close-on-click-modal="false"
     >
-      <el-form ref="form" :model="form" :rules="rules" label-width="80px">
+      <el-form ref="form" :model="form" :rules="rules" label-width="100px" class="contract-form">
+        <el-divider content-position="left">基本信息</el-divider>
         <el-form-item label="合同标题" prop="title">
           <el-input v-model="form.title" placeholder="请输入合同标题" />
         </el-form-item>
-        <el-form-item label="合同内容" prop="content">
+        <el-divider content-position="left">合同内容</el-divider>
+        <el-form-item label="" prop="content">
           <Toolbar
             style="border-bottom: 1px solid #ccc"
             :editor="editor"
@@ -181,7 +222,10 @@
           />
         </el-form-item>
 
-        <el-form-item label="合同模版">
+        <el-divider content-position="left">合同配置</el-divider>
+        <el-row :gutter="20">
+          <el-col :span="8">
+            <el-form-item label="合同模版">
           <el-select
             placeholder="请选择合同模版"
             v-model="form.optionValue"
@@ -194,9 +238,10 @@
               :value="item.id"
             />
           </el-select>
-        </el-form-item>
-
-        <el-form-item label="甲方">
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="甲方">
           <el-select
             placeholder="请指定甲方"
             v-model="form.partyAName"
@@ -210,9 +255,10 @@
               :value="item.userId"
             />
           </el-select>
-        </el-form-item>
-
-        <el-form-item label="乙方">
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="乙方">
           <el-select
             placeholder="请指定乙方"
             v-model="form.partyBName"
@@ -225,17 +271,21 @@
               :value="item.userId"
             />
           </el-select>
-        </el-form-item>
+            </el-form-item>
+          </el-col>
+        </el-row>
 
-        <el-form-item label="双方意见" v-if="form.notifyInfoList && form.notifyInfoList.length > 0">
-          <p v-for="item in form.notifyInfoList">
-            {{ item.userName }} : {{ item.content }}
-          </p>
+        <el-divider content-position="left" v-if="form.notifyInfoList && form.notifyInfoList.length > 0">双方意见</el-divider>
+        <el-form-item v-if="form.notifyInfoList && form.notifyInfoList.length > 0">
+          <el-card v-for="(item, index) in form.notifyInfoList" :key="index" class="opinion-card" shadow="hover">
+            <div class="opinion-header">{{ item.userName }}</div>
+            <div class="opinion-content">{{ item.content }}</div>
+          </el-card>
         </el-form-item>
       </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="submitForm">确 定</el-button>
-        <el-button @click="cancel">取 消</el-button>
+      <div slot="footer" class="dialog-footer contract-dialog-footer">
+        <el-button type="primary" icon="el-icon-check" @click="submitForm">确 定</el-button>
+        <el-button icon="el-icon-close" @click="cancel">取 消</el-button>
       </div>
     </el-dialog>
 
@@ -246,10 +296,12 @@
       width="1200px"
       append-to-body
     >
-      <el-form ref="form" :model="form" :rules="rules" label-width="80px">
+      <el-form ref="form" :model="form" :rules="rules" label-width="100px" class="contract-form">
+        <el-divider content-position="left">基本信息</el-divider>
         <el-form-item label="合同标题" prop="title">
           <el-input v-model="form.title" placeholder="请输入合同标题" />
         </el-form-item>
+        <el-divider content-position="left">合同内容</el-divider>
         <el-form-item label="合同内容" prop="content">
           <Toolbar
             style="border-bottom: 1px solid #ccc"
@@ -266,7 +318,10 @@
           />
         </el-form-item>
 
-        <el-form-item label="合同模版">
+        <el-divider content-position="left">合同配置</el-divider>
+        <el-row :gutter="20">
+          <el-col :span="8">
+            <el-form-item label="合同模版">
           <el-select placeholder="请选择合同模版" v-model="form.optionValue" @change="handleTemplateChange"
           >
             <el-option
@@ -278,9 +333,9 @@
           </el-select>
         </el-form-item>
       </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="submitForm">确 定</el-button>
-        <el-button @click="cancel">取 消</el-button>
+      <div slot="footer" class="dialog-footer contract-dialog-footer">
+        <el-button type="primary" icon="el-icon-check" @click="submitForm">确 定</el-button>
+        <el-button icon="el-icon-close" @click="cancel">取 消</el-button>
       </div>
     </el-dialog> -->
   </div>
@@ -374,6 +429,16 @@ export default {
     // 模拟 ajax 请求，异步渲染编辑器
   },
   methods: {
+    statusTagType(status) {
+      const statusMap = {
+        '草稿': 'info',
+        '待修改': 'warning',
+        '审核中': 'primary',
+        '已完成': 'success',
+        '已拒绝': 'danger'
+      };
+      return statusMap[status] || 'info';
+    },
     handleSubmitContract(row) {
       submitContract({ id: row.id }).then((response) => {
         this.$modal.msgSuccess("提交成功");
@@ -503,7 +568,89 @@ export default {
 </script>
 
 <style lang="scss">
-.contract-content {
-  white-space: nowrap;
+.contract-management {
+  .search-card {
+    margin-bottom: 20px;
+  }
+
+  .action-bar {
+    margin: 20px 0;
+  }
+
+  .table-card {
+    margin-bottom: 20px;
+    
+    .card-title {
+      font-size: 18px;
+      font-weight: bold;
+    }
+  }
+
+  .contract-title {
+    font-weight: 500;
+    cursor: pointer;
+    display: inline-block;
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .content-preview {
+    max-width: 180px;
+    max-height: 60px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    cursor: pointer;
+  }
+
+  .operation-column {
+    .el-button {
+      padding: 7px;
+      margin: 0 5px;
+    }
+  }
+}
+
+.contract-dialog {
+  .el-dialog__header {
+    border-bottom: 1px solid #ebeef5;
+    padding: 15px 20px;
+    background-color: #f5f7fa;
+  }
+
+  .el-dialog__body {
+    padding: 20px 30px;
+  }
+
+  .contract-form {
+    .el-divider__text {
+      font-weight: bold;
+      color: #409EFF;
+    }
+
+    .opinion-card {
+      margin-bottom: 10px;
+      border-left: 3px solid #409EFF;
+
+      .opinion-header {
+        font-weight: bold;
+        margin-bottom: 5px;
+        color: #409EFF;
+      }
+
+      .opinion-content {
+        color: #606266;
+        line-height: 1.5;
+      }
+    }
+  }
+
+  .contract-dialog-footer {
+    border-top: 1px solid #ebeef5;
+    padding: 15px 20px;
+    text-align: right;
+  }
 }
 </style>
