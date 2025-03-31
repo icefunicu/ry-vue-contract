@@ -51,3 +51,12 @@ export function approve(data) {
     data: data
   })
 }
+
+// 提交reject
+export function reject(data) {
+  return request({
+    url: '/contract/approval/reject/',
+    method: 'put',
+    data: data
+  })
+}

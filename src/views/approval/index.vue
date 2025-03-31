@@ -86,6 +86,7 @@
             size="mini"
             type="text"
             icon="el-icon-edit"
+            :disabled="scope.row.status !== '待审批'"
             @click="handleUpdate(scope.row)"
             >审批</el-button
           >
@@ -93,6 +94,7 @@
             size="mini"
             type="text"
             icon="el-icon-delete"
+            :disabled="scope.row.status !== '待审批'"
             @click="handleDelete(scope.row)"
             >删除</el-button
           >
@@ -109,9 +111,17 @@
     />
 
     <!-- 添加或修改审核对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
+    <el-dialog :title="title" :visible.sync="open" width="700px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <!-- <vue-pdf-embed :source="http://localhost:8080/contract_4.pdfa" /> -->
+        <el-link type="primary" :href="form.filePath" target="_blank"
+          >点我进入全屏预览</el-link
+        ><br />
+        <vue-office-pdf
+          :src="form.filePath"
+          style="height: 75vh; margin-top: 30px; margin-bottom: 30px"
+          @rendered="rendered"
+        />
+
         <el-form-item label="评审内容" prop="comment">
           <el-input
             v-model="form.comment"
@@ -121,7 +131,8 @@
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="submitForm">确 定</el-button>
+        <el-button type="success" @click="submitForm">通 过</el-button>
+        <el-button type="danger" @click="refuseForm">驳 回</el-button>
         <el-button @click="cancel">取 消</el-button>
       </div>
     </el-dialog>
@@ -129,6 +140,9 @@
 </template>
 
 <script>
+import VueOfficePdf from "@vue-office/pdf";
+// import "@vue-office/pdf/lib/index.css";
+
 import {
   listApproval,
   getApproval,
@@ -136,10 +150,14 @@ import {
   addApproval,
   updateApproval,
   approve,
+  reject,
 } from "@/api/approval";
 
 export default {
   name: "Approval",
+  components: {
+    VueOfficePdf,
+  },
   data() {
     return {
       // 遮罩层
@@ -171,7 +189,9 @@ export default {
         approvedTime: null,
       },
       // 表单参数
-      form: {},
+      form: {
+        filePath: "http://localhost:8080/contract_4.pdf", // 替换为你的 PDF 文件 URL
+      },
       // 表单校验
       rules: {
         contractId: [
@@ -190,6 +210,16 @@ export default {
     this.getList();
   },
   methods: {
+    refuseForm() {
+      reject({ id: this.form.id }).then((response) => {
+        this.$modal.msgSuccess("驳回成功");
+        this.open = false;
+        this.getList();
+      });
+    },
+    rendered() {
+      console.log("PDF 渲染完成");
+    },
     /** 查询审核列表 */
     getList() {
       this.loading = true;
@@ -244,6 +274,7 @@ export default {
       const id = row.id || this.ids;
       getApproval(id).then((response) => {
         this.form = response.data;
+        this.form.filePath = response.data.contract.filePath;
         this.open = true;
         this.title = "审批";
       });
