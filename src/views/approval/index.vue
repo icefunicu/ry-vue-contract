@@ -1,6 +1,13 @@
 <template>
   <div class="app-container">
-    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
+    <el-form
+      :model="queryParams"
+      ref="queryForm"
+      size="small"
+      :inline="true"
+      v-show="showSearch"
+      label-width="68px"
+    >
       <el-form-item label="合同编号" prop="contractId">
         <el-input
           v-model="queryParams.contractId"
@@ -18,99 +25,83 @@
         />
       </el-form-item>
       <el-form-item label="审核时间" prop="approvedTime">
-        <el-date-picker clearable
+        <el-date-picker
+          clearable
           v-model="queryParams.approvedTime"
           type="date"
           value-format="yyyy-MM-dd"
-          placeholder="请选择审核时间">
+          placeholder="请选择审核时间"
+        >
         </el-date-picker>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
-        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
+        <el-button
+          type="primary"
+          icon="el-icon-search"
+          size="mini"
+          @click="handleQuery"
+          >搜索</el-button
+        >
+        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery"
+          >重置</el-button
+        >
       </el-form-item>
     </el-form>
 
     <el-row :gutter="10" class="mb8">
-      <el-col :span="1.5">
-        <el-button
-          type="primary"
-          plain
-          icon="el-icon-plus"
-          size="mini"
-          @click="handleAdd"
-          v-hasPermi="['system:approval:add']"
-        >新增</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="success"
-          plain
-          icon="el-icon-edit"
-          size="mini"
-          :disabled="single"
-          @click="handleUpdate"
-          v-hasPermi="['system:approval:edit']"
-        >修改</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="danger"
-          plain
-          icon="el-icon-delete"
-          size="mini"
-          :disabled="multiple"
-          @click="handleDelete"
-          v-hasPermi="['system:approval:remove']"
-        >删除</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="warning"
-          plain
-          icon="el-icon-download"
-          size="mini"
-          @click="handleExport"
-          v-hasPermi="['system:approval:export']"
-        >导出</el-button>
-      </el-col>
-      <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
+      <right-toolbar
+        :showSearch.sync="showSearch"
+        @queryTable="getList"
+      ></right-toolbar>
     </el-row>
 
-    <el-table v-loading="loading" :data="approvalList" @selection-change="handleSelectionChange">
+    <el-table
+      v-loading="loading"
+      :data="approvalList"
+      @selection-change="handleSelectionChange"
+    >
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="审批编号" align="center" prop="id" />
-      <el-table-column label="合同编号" align="center" prop="contractId" />
-      <el-table-column label="审批人编号" align="center" prop="approverId" />
-      <el-table-column label="审批状态" align="center" prop="status" />
+      <el-table-column label="合同名称" align="center" prop="contractTitle" />
+      <el-table-column label="合同状态" align="center" prop="status" />
       <el-table-column label="审批内容" align="center" prop="comment" />
-      <el-table-column label="审批时间" align="center" prop="approvedTime" width="180">
+      <el-table-column label="审批人" align="center" prop="approverName" />
+      <el-table-column
+        label="审批时间"
+        align="center"
+        prop="approvedTime"
+        width="180"
+      >
         <template slot-scope="scope">
-          <span>{{ parseTime(scope.row.approvedTime, '{y}-{m}-{d}') }}</span>
+          <span>{{ parseTime(scope.row.approvedTime, "{y}-{m}-{d}") }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+      <el-table-column
+        label="操作"
+        align="center"
+        class-name="small-padding fixed-width"
+      >
         <template slot-scope="scope">
           <el-button
             size="mini"
             type="text"
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
-            v-hasPermi="['system:approval:edit']"
-          >修改</el-button>
+            >审批</el-button
+          >
           <el-button
             size="mini"
             type="text"
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
-            v-hasPermi="['system:approval:remove']"
-          >删除</el-button>
+            >删除</el-button
+          >
         </template>
       </el-table-column>
     </el-table>
-    
+
     <pagination
-      v-show="total>0"
+      v-show="total > 0"
       :total="total"
       :page.sync="queryParams.pageNum"
       :limit.sync="queryParams.pageSize"
@@ -120,22 +111,13 @@
     <!-- 添加或修改审核对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="合同" prop="contractId">
-          <el-input v-model="form.contractId" placeholder="请输入${comment}" />
-        </el-form-item>
-        <el-form-item label="审核人" prop="approverId">
-          <el-input v-model="form.approverId" placeholder="请输入${comment}" />
-        </el-form-item>
+        <!-- <vue-pdf-embed :source="http://localhost:8080/contract_4.pdfa" /> -->
         <el-form-item label="评审内容" prop="comment">
-          <el-input v-model="form.comment" type="textarea" placeholder="请输入内容" />
-        </el-form-item>
-        <el-form-item label="评审时间" prop="approvedTime">
-          <el-date-picker clearable
-            v-model="form.approvedTime"
-            type="date"
-            value-format="yyyy-MM-dd"
-            placeholder="请选择评审时间">
-          </el-date-picker>
+          <el-input
+            v-model="form.comment"
+            type="textarea"
+            placeholder="请输入内容"
+          />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -147,7 +129,14 @@
 </template>
 
 <script>
-import { listApproval, getApproval, delApproval, addApproval, updateApproval } from "@/api/approval";
+import {
+  listApproval,
+  getApproval,
+  delApproval,
+  addApproval,
+  updateApproval,
+  approve,
+} from "@/api/approval";
 
 export default {
   name: "Approval",
@@ -179,22 +168,22 @@ export default {
         approverId: null,
         status: null,
         comment: null,
-        approvedTime: null
+        approvedTime: null,
       },
       // 表单参数
       form: {},
       // 表单校验
       rules: {
         contractId: [
-          { required: true, message: "合同id不能为空", trigger: "blur" }
+          { required: true, message: "合同id不能为空", trigger: "blur" },
         ],
         approverId: [
-          { required: true, message: "审核人id不能为空", trigger: "blur" }
+          { required: true, message: "审核人id不能为空", trigger: "blur" },
         ],
         status: [
-          { required: true, message: "审核状态不能为空", trigger: "change" }
+          { required: true, message: "审核状态不能为空", trigger: "change" },
         ],
-      }
+      },
     };
   },
   created() {
@@ -204,7 +193,7 @@ export default {
     /** 查询审核列表 */
     getList() {
       this.loading = true;
-      listApproval(this.queryParams).then(response => {
+      listApproval(this.queryParams).then((response) => {
         this.approvalList = response.rows;
         this.total = response.total;
         this.loading = false;
@@ -223,7 +212,7 @@ export default {
         approverId: null,
         status: null,
         comment: null,
-        approvedTime: null
+        approvedTime: null,
       };
       this.resetForm("form");
     },
@@ -239,9 +228,9 @@ export default {
     },
     // 多选框选中数据
     handleSelectionChange(selection) {
-      this.ids = selection.map(item => item.id)
-      this.single = selection.length!==1
-      this.multiple = !selection.length
+      this.ids = selection.map((item) => item.id);
+      this.single = selection.length !== 1;
+      this.multiple = !selection.length;
     },
     /** 新增按钮操作 */
     handleAdd() {
@@ -252,29 +241,25 @@ export default {
     /** 修改按钮操作 */
     handleUpdate(row) {
       this.reset();
-      const id = row.id || this.ids
-      getApproval(id).then(response => {
+      const id = row.id || this.ids;
+      getApproval(id).then((response) => {
         this.form = response.data;
         this.open = true;
-        this.title = "修改审核";
+        this.title = "审批";
       });
     },
     /** 提交按钮 */
     submitForm() {
-      this.$refs["form"].validate(valid => {
+      this.$refs["form"].validate((valid) => {
         if (valid) {
           if (this.form.id != null) {
-            updateApproval(this.form).then(response => {
-              this.$modal.msgSuccess("修改成功");
-              this.open = false;
-              this.getList();
-            });
-          } else {
-            addApproval(this.form).then(response => {
-              this.$modal.msgSuccess("新增成功");
-              this.open = false;
-              this.getList();
-            });
+            approve({ id: this.form.id, comment: this.form.comment }).then(
+              (response) => {
+                this.$modal.msgSuccess("审批成功");
+                this.open = false;
+                this.getList();
+              }
+            );
           }
         }
       });
@@ -282,19 +267,27 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       const ids = row.id || this.ids;
-      this.$modal.confirm('是否确认删除审核编号为"' + ids + '"的数据项？').then(function() {
-        return delApproval(ids);
-      }).then(() => {
-        this.getList();
-        this.$modal.msgSuccess("删除成功");
-      }).catch(() => {});
+      this.$modal
+        .confirm('是否确认删除审核编号为"' + ids + '"的数据项？')
+        .then(function () {
+          return delApproval(ids);
+        })
+        .then(() => {
+          this.getList();
+          this.$modal.msgSuccess("删除成功");
+        })
+        .catch(() => {});
     },
     /** 导出按钮操作 */
     handleExport() {
-      this.download('system/approval/export', {
-        ...this.queryParams
-      }, `approval_${new Date().getTime()}.xlsx`)
-    }
-  }
+      this.download(
+        "system/approval/export",
+        {
+          ...this.queryParams,
+        },
+        `approval_${new Date().getTime()}.xlsx`
+      );
+    },
+  },
 };
 </script>

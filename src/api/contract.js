@@ -59,3 +59,20 @@ export function submitContract(data) {
     data: data
   })
 }
+// 提交意见
+export function submitOpinion(data) {
+  return request({
+    url: '/contract/submitOpinion/',
+    method: 'post',
+    data: data
+  })
+}
+
+// 提交pass
+export function pass(data) {
+  return request({
+    url: '/contract/pass/',
+    method: 'post',
+    data: data
+  })
+}

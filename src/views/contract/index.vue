@@ -9,26 +9,26 @@
         v-show="showSearch"
         label-width="80px"
       >
-      <el-form-item label="合同标题" prop="title">
-        <el-input
-          v-model="queryParams.title"
-          placeholder="请输入合同标题"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item>
-        <el-button
-          type="primary"
-          icon="el-icon-search"
-          size="mini"
-          @click="handleQuery"
-          >搜索</el-button
-        >
-        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery"
-          >重置</el-button
-        >
-      </el-form-item>
+        <el-form-item label="合同标题" prop="title">
+          <el-input
+            v-model="queryParams.title"
+            placeholder="请输入合同标题"
+            clearable
+            @keyup.enter.native="handleQuery"
+          />
+        </el-form-item>
+        <el-form-item>
+          <el-button
+            type="primary"
+            icon="el-icon-search"
+            size="mini"
+            @click="handleQuery"
+            >搜索</el-button
+          >
+          <el-button icon="el-icon-refresh" size="mini" @click="resetQuery"
+            >重置</el-button
+          >
+        </el-form-item>
       </el-form>
     </el-card>
 
@@ -40,7 +40,6 @@
           icon="el-icon-plus"
           size="mini"
           @click="handleAdd"
-          v-hasPermi="['system:contract:add']"
           >新增</el-button
         >
       </el-col>
@@ -52,7 +51,6 @@
           size="mini"
           :disabled="single"
           @click="handleUpdate"
-          v-hasPermi="['system:contract:edit']"
           >修改</el-button
         >
       </el-col>
@@ -64,7 +62,6 @@
           size="mini"
           :disabled="multiple"
           @click="handleDelete"
-          v-hasPermi="['system:contract:remove']"
           >删除</el-button
         >
       </el-col>
@@ -75,7 +72,6 @@
           icon="el-icon-download"
           size="mini"
           @click="handleExport"
-          v-hasPermi="['system:contract:export']"
           >导出</el-button
         >
       </el-col>
@@ -98,96 +94,119 @@
         highlight-current-row
         style="width: 100%"
       >
-      <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="ID" align="center" prop="id" width="80" />
-      <el-table-column label="合同名称" align="center" prop="title">
-        <template slot-scope="scope">
-          <el-tooltip class="item" effect="dark" :content="scope.row.title" placement="top-start">
-            <span class="contract-title">{{ scope.row.title }}</span>
-          </el-tooltip>
-        </template>
-      </el-table-column>
-      <el-table-column
-        label="合同内容"
-        align="center"
-        prop="content"
-        width="200"
-      >
-        <template slot-scope="scope">
-          <el-tooltip class="item" effect="dark" :content="scope.row.content" placement="top-start">
-            <div class="content-preview">{{ scope.row.content }}</div>
-          </el-tooltip>
-        </template>
-      </el-table-column>
-      <el-table-column label="创建人" align="center" prop="createdByName" />
-      <el-table-column label="合同状态" align="center" prop="status">
-        <template slot-scope="scope">
-          <el-tag
-            :type="statusTagType(scope.row.status)"
-            effect="plain"
-            size="medium"
-          >
-            {{ scope.row.status }}
-          </el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column label="合同路径" align="center" prop="filePath" />
-      <el-table-column
-        label="合同创建时间"
-        align="center"
-        prop="createdTime"
-        width="180"
-      >
-        <template slot-scope="scope">
-          <span>{{ parseTime(scope.row.createdTime, "{y}-{m}-{d}") }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column
-        label="操作"
-        align="center"
-        class-name="operation-column"
-        width="200"
-      >
-        <template slot-scope="scope">
-          <el-button
-            size="mini"
-            type="primary"
-            icon="el-icon-check"
-            circle
-            :disabled="!(scope.row.status === '草稿' || scope.row.status === '待修改')"
-            @click="handleSubmitContract(scope.row)"
-            title="提交"
-          ></el-button>
-          <el-button
-            size="mini"
-            type="success"
-            icon="el-icon-edit"
-            circle
-            :disabled="!(scope.row.status === '草稿' || scope.row.status === '待修改')"
-            @click="handleUpdate(scope.row)"
-            v-hasPermi="['system:contract:edit']"
-            title="修改"
-          ></el-button>
-          <el-button
-            size="mini"
-            type="danger"
-            icon="el-icon-delete"
-            circle
-            :disabled="!(scope.row.status === '草稿' || scope.row.status === '待修改')"
-            @click="handleDelete(scope.row)"
-            v-hasPermi="['system:contract:remove']"
-            title="删除"
-          ></el-button>
-        </template>
-      </el-table-column>
-    </el-table>
+        <el-table-column type="selection" width="55" align="center" />
+        <el-table-column label="ID" align="center" prop="id" width="80" />
+        <el-table-column label="合同名称" align="center" prop="title">
+          <template slot-scope="scope">
+            <el-tooltip
+              class="item"
+              effect="dark"
+              :content="scope.row.title"
+              placement="top-start"
+            >
+              <span class="contract-title">{{ scope.row.title }}</span>
+            </el-tooltip>
+          </template>
+        </el-table-column>
+        <el-table-column
+          label="合同内容"
+          align="center"
+          prop="content"
+          width="200"
+        >
+          <template slot-scope="scope">
+            <el-tooltip
+              class="item"
+              effect="dark"
+              :content="scope.row.content"
+              placement="top-start"
+            >
+              <div class="content-preview">{{ scope.row.content }}</div>
+            </el-tooltip>
+          </template>
+        </el-table-column>
+        <el-table-column label="创建人" align="center" prop="createdByName" />
+        <el-table-column label="合同状态" align="center" prop="status">
+          <template slot-scope="scope">
+            <el-tag
+              :type="statusTagType(scope.row.status)"
+              effect="plain"
+              size="medium"
+            >
+              {{ scope.row.status }}
+            </el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column label="合同路径" align="center" prop="filePath" />
+        <el-table-column
+          label="合同创建时间"
+          align="center"
+          prop="createdTime"
+          width="180"
+        >
+          <template slot-scope="scope">
+            <span>{{ parseTime(scope.row.createdTime, "{y}-{m}-{d}") }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          label="操作"
+          align="center"
+          class-name="operation-column"
+          width="200"
+        >
+          <template slot-scope="scope">
+            <el-button
+              size="mini"
+              type="primary"
+              icon="el-icon-view"
+              circle
+              :disabled="!(scope.row.status === '待查看')"
+              @click="handleUpdate(scope.row)"
+              title="查看"
+            ></el-button>
+            <el-button
+              size="mini"
+              type="primary"
+              icon="el-icon-check"
+              circle
+              :disabled="
+                !(scope.row.status === '草稿' || scope.row.status === '待修改') || scope.row.createdBy!== userId
+              "
+              @click="handleSubmitContract(scope.row)"
+              title="提交"
+            ></el-button>
+            <el-button
+              size="mini"
+              type="success"
+              icon="el-icon-edit"
+              circle
+              :disabled="
+                !(scope.row.status === '草稿' || scope.row.status === '待修改') || scope.row.createdBy !== userId
+              "
+              @click="handleUpdate(scope.row)"
+              title="修改"
+            ></el-button>
+            <el-button
+              size="mini"
+              type="danger"
+              icon="el-icon-delete"
+              circle
+              :disabled="
+                !(scope.row.status === '草稿' || scope.row.status === '待修改')
+              "
+              @click="handleDelete(scope.row)"
+              title="删除"
+            ></el-button>
+          </template>
+        </el-table-column>
+      </el-table>
 
-    <pagination
-      v-show="total > 0"
-      :total="total"
-      :page.sync="queryParams.pageNum"
-      :limit.sync="queryParams.pageSize"
-      @pagination="getList"
+      <pagination
+        v-show="total > 0"
+        :total="total"
+        :page.sync="queryParams.pageNum"
+        :limit.sync="queryParams.pageSize"
+        @pagination="getList"
       />
     </el-card>
 
@@ -200,7 +219,13 @@
       custom-class="contract-dialog"
       :close-on-click-modal="false"
     >
-      <el-form ref="form" :model="form" :rules="rules" label-width="100px" class="contract-form">
+      <el-form
+        ref="form"
+        :model="form"
+        :rules="rules"
+        label-width="100px"
+        class="contract-form"
+      >
         <el-divider content-position="left">基本信息</el-divider>
         <el-form-item label="合同标题" prop="title">
           <el-input v-model="form.title" placeholder="请输入合同标题" />
@@ -226,65 +251,100 @@
         <el-row :gutter="20">
           <el-col :span="8">
             <el-form-item label="合同模版">
-          <el-select
-            placeholder="请选择合同模版"
-            v-model="form.optionValue"
-            @change="handleTemplateChange"
-          >
-            <el-option
-              v-for="item in templateList"
-              :key="item.id"
-              :label="item.name"
-              :value="item.id"
-            />
-          </el-select>
+              <el-select
+                placeholder="请选择合同模版"
+                v-model="form.optionValue"
+                @change="handleTemplateChange"
+              >
+                <el-option
+                  v-for="item in templateList"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.id"
+                />
+              </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="8">
             <el-form-item label="甲方">
-          <el-select
-            placeholder="请指定甲方"
-            v-model="form.partyAName"
-            @change="handlePartAChange"
-            @focus="getUserList"
-          >
-            <el-option
-              v-for="item in userList"
-              :key="item.userId"
-              :label="item.nickName"
-              :value="item.userId"
-            />
-          </el-select>
+              <el-select
+                placeholder="请指定甲方"
+                v-model="form.partyA"
+                @change="handlePartAChange"
+                @focus="getUserList"
+              >
+                <el-option
+                  v-for="item in userList"
+                  :key="item.userId"
+                  :label="item.nickName"
+                  :value="item.userId"
+                />
+              </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="8">
             <el-form-item label="乙方">
-          <el-select
-            placeholder="请指定乙方"
-            v-model="form.partyBName"
-            @change="handlePartBChange"
-          >
-            <el-option
-              v-for="item in userList"
-              :key="item.userId"
-              :label="item.nickName"
-              :value="item.userId"
-            />
-          </el-select>
+              <el-select
+                placeholder="请指定乙方"
+                v-model="form.partyB"
+                @change="handlePartBChange"
+              >
+                <el-option
+                  v-for="item in userList"
+                  :key="item.userId"
+                  :label="item.nickName"
+                  :value="item.userId"
+                />
+              </el-select>
             </el-form-item>
           </el-col>
         </el-row>
 
-        <el-divider content-position="left" v-if="form.notifyInfoList && form.notifyInfoList.length > 0">双方意见</el-divider>
-        <el-form-item v-if="form.notifyInfoList && form.notifyInfoList.length > 0">
-          <el-card v-for="(item, index) in form.notifyInfoList" :key="index" class="opinion-card" shadow="hover">
+        <el-divider
+          content-position="left"
+          v-if="form.notifyInfoList && form.notifyInfoList.length > 0"
+          >双方意见</el-divider
+        >
+        <el-form-item
+          v-if="form.notifyInfoList && form.notifyInfoList.length > 0"
+        >
+          <el-card
+            v-for="(item, index) in form.notifyInfoList"
+            :key="index"
+            class="opinion-card"
+            shadow="hover"
+          >
             <div class="opinion-header">{{ item.userName }}</div>
             <div class="opinion-content">{{ item.content }}</div>
           </el-card>
         </el-form-item>
+        <el-form-item
+          label="意见"
+          v-if="form.status === '待查看' || form.status === '待修改'"
+        >
+          <el-input
+            v-model="opinion"
+            placeholder="请输入意见"
+            type="textarea"
+            :rows="3"
+          />
+        </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer contract-dialog-footer">
-        <el-button type="primary" icon="el-icon-check" @click="submitForm">确 定</el-button>
+        <el-button
+          v-if="form.status === '待查看' || form.status === '待修改'"
+          type="primary"
+          class="contract-dialog-button"
+          @click="handleOpinion(form.id)"
+          >提交意见</el-button
+        >
+        <el-button
+          type="primary"
+          icon="el-icon-check"
+          @click="submitForm"
+          v-if="userId !== form.createdBy || form.status !== '待查看'"
+          >确 定</el-button
+        >
         <el-button icon="el-icon-close" @click="cancel">取 消</el-button>
       </div>
     </el-dialog>
@@ -349,7 +409,12 @@ import {
   addContract,
   updateContract,
   submitContract,
+  submitOpinion,
+  pass,
 } from "@/api//contract";
+import store from "@/store";
+
+import { listTemplates } from "@/api/template.js";
 
 import { listUser } from "@/api/system/user.js";
 import { Editor, Toolbar } from "@wangeditor/editor-for-vue";
@@ -360,7 +425,8 @@ export default {
 
   data() {
     return {
-
+      userId: null,
+      opinion: "",
       partyA: null,
       partyB: null,
       userList: [
@@ -423,6 +489,8 @@ export default {
     editor.destroy(); // 组件销毁时，及时销毁编辑器
   },
   created() {
+    this.userId = store.getters.userId;
+    console.log(this.userId);
     this.getList();
   },
   mounted() {
@@ -431,13 +499,24 @@ export default {
   methods: {
     statusTagType(status) {
       const statusMap = {
-        '草稿': 'info',
-        '待修改': 'warning',
-        '审核中': 'primary',
-        '已完成': 'success',
-        '已拒绝': 'danger'
+        草稿: "info",
+        待查看: "warning",
+        待修改: "warning",
+        待审批: "primary",
+        待签字: "primary",
+        已签署: "success",
       };
-      return statusMap[status] || 'info';
+      return statusMap[status] || "info";
+    },
+    handleOpinion(id) {
+      // 调用后端接口，将意见提交到数据库
+      console.log(id);
+      submitOpinion({ id: id, opinion: this.opinion }).then((response) => {
+        this.$modal.msgSuccess("提交成功");
+        this.getList();
+        this.open = false;
+        this.opinion = "";
+      });
     },
     handleSubmitContract(row) {
       submitContract({ id: row.id }).then((response) => {
@@ -470,6 +549,9 @@ export default {
         this.contractList = response.rows;
         this.total = response.total;
         this.loading = false;
+      });
+      listTemplates().then((response) => {
+        this.templateList = response.rows;
       });
     },
     // 取消按钮
@@ -523,6 +605,15 @@ export default {
     submitForm() {
       this.$refs["form"].validate((valid) => {
         if (valid) {
+          if (this.form.status === "待查看") {
+            pass({ id: this.form.id }).then(() => {
+              this.$modal.msgSuccess("提交审核");
+              this.open = false;
+              this.getList();
+            });
+            return;
+          }
+
           if (this.form.id != null) {
             updateContract(this.form).then((response) => {
               this.$modal.msgSuccess("修改成功");
@@ -566,91 +657,3 @@ export default {
   },
 };
 </script>
-
-<style lang="scss">
-.contract-management {
-  .search-card {
-    margin-bottom: 20px;
-  }
-
-  .action-bar {
-    margin: 20px 0;
-  }
-
-  .table-card {
-    margin-bottom: 20px;
-    
-    .card-title {
-      font-size: 18px;
-      font-weight: bold;
-    }
-  }
-
-  .contract-title {
-    font-weight: 500;
-    cursor: pointer;
-    display: inline-block;
-    max-width: 200px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  .content-preview {
-    max-width: 180px;
-    max-height: 60px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    cursor: pointer;
-  }
-
-  .operation-column {
-    .el-button {
-      padding: 7px;
-      margin: 0 5px;
-    }
-  }
-}
-
-.contract-dialog {
-  .el-dialog__header {
-    border-bottom: 1px solid #ebeef5;
-    padding: 15px 20px;
-    background-color: #f5f7fa;
-  }
-
-  .el-dialog__body {
-    padding: 20px 30px;
-  }
-
-  .contract-form {
-    .el-divider__text {
-      font-weight: bold;
-      color: #409EFF;
-    }
-
-    .opinion-card {
-      margin-bottom: 10px;
-      border-left: 3px solid #409EFF;
-
-      .opinion-header {
-        font-weight: bold;
-        margin-bottom: 5px;
-        color: #409EFF;
-      }
-
-      .opinion-content {
-        color: #606266;
-        line-height: 1.5;
-      }
-    }
-  }
-
-  .contract-dialog-footer {
-    border-top: 1px solid #ebeef5;
-    padding: 15px 20px;
-    text-align: right;
-  }
-}
-</style>

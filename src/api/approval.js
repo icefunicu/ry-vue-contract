@@ -42,3 +42,12 @@ export function delApproval(id) {
     method: 'delete'
   })
 }
+
+// 修改审核
+export function approve(data) {
+  return request({
+    url: '/contract/approval/approve',
+    method: 'put',
+    data: data
+  })
+}

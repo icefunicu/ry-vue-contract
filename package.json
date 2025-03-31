@@ -51,6 +51,7 @@
     "js-cookie": "3.0.1",
     "jsencrypt": "3.0.0-rc.1",
     "nprogress": "0.2.0",
+    "pdfjs-dist": "^2.11.338",
     "quill": "2.0.2",
     "screenfull": "5.0.2",
     "sortablejs": "1.10.2",
@@ -59,6 +60,7 @@
     "vue-count-to": "1.0.13",
     "vue-cropper": "0.5.5",
     "vue-meta": "2.4.0",
+    "vue-pdf-embed": "^1.2.1",
     "vue-router": "3.4.9",
     "vuedraggable": "2.24.3",
     "vuex": "3.6.0"
