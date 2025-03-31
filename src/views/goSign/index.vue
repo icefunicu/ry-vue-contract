@@ -223,7 +223,7 @@ export default {
     },
     /** goSign */
     handleGoSign(row) {
-      window.open(`/sign/index`);
+      this.$router.push({ path: "/sign/index", query: { id: row.id } });
 
       // getSigner({ id: row.contractId }).then((response) => {
       //   const { title, pdfUrl, partAName, partBName } = response.data;
