@@ -67,10 +67,9 @@
       @selection-change="handleSelectionChange"
     >
       <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="签署编号" align="center" prop="id" />
       <el-table-column label="合同编号" align="center" prop="contractId" />
-      <el-table-column label="甲方" align="center" prop="partyA" />
-      <el-table-column label="乙方" align="center" prop="partyB" />
+      <el-table-column label="甲方" align="center" prop="contract.partyAName" />
+      <el-table-column label="乙方" align="center" prop="contract.partyBName" />
       <el-table-column label="签署状态" align="center" prop="signed" />
       <el-table-column
         label="签署时间"
@@ -178,6 +177,9 @@ export default {
       this.loading = true;
       listSigner(this.queryParams).then((response) => {
         this.signerList = response.rows;
+        this.signerList.forEach((item) => {
+          item.signed = item.signed === 1 ? "已签署" : "未签署";
+        });
         this.total = response.total;
         this.loading = false;
       });
@@ -223,11 +225,7 @@ export default {
     },
     /** goSign */
     handleGoSign(row) {
-      this.$router.push({ path: "/sign/index", query: { id: row.id } });
-
-      // getSigner({ id: row.contractId }).then((response) => {
-      //   const { title, pdfUrl, partAName, partBName } = response.data;
-      // });
+      this.$router.push({ path: "/sign/index", query: { id: row.contractId } });
     },
     /** 提交按钮 */
     submitForm() {

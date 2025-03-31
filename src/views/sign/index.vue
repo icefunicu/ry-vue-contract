@@ -151,25 +151,6 @@
                 </div>
               </div>
             </el-tab-pane>
-
-            <el-tab-pane label="关键字签署" name="keywords">
-              <div class="keywords-options">
-                <el-form :model="keywordsForm" label-width="100px">
-                  <el-form-item label="企业关键字">
-                    <el-input
-                      v-model="keywordsForm.entKeyword"
-                      placeholder="请输入企业签章关键字"
-                    ></el-input>
-                  </el-form-item>
-                  <el-form-item label="个人关键字">
-                    <el-input
-                      v-model="keywordsForm.personalKeyword"
-                      placeholder="请输入个人签名关键字"
-                    ></el-input>
-                  </el-form-item>
-                </el-form>
-              </div>
-            </el-tab-pane>
           </el-tabs>
 
           <div class="sign-actions">
