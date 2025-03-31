@@ -228,7 +228,7 @@ export default {
         entKeyword: "",
         personalKeyword: "",
       },
-      signType: "POSITION", // POSITION或KEYWORDS
+      signType: 1, // POSITION或KEYWORDS
       entPositionList: [],
       personalPositionList: [],
       signSuccessDialogVisible: false,
@@ -524,66 +524,42 @@ export default {
 
     // 签署合同
     signContract() {
-      // 检查是否有印章或签名
-      if (this.activeTab === "keywords") {
-        // 关键字签署模式
-        this.signType = "KEYWORDS";
-        if (
-          !this.keywordsForm.entKeyword &&
-          !this.keywordsForm.personalKeyword
-        ) {
-          this.$message.warning("请至少设置一个签署关键字");
-          return;
-        }
-      } else {
-        // 位置签署模式
-        this.signType = "POSITION";
-        if (
-          this.entPositionList.length === 0 &&
-          this.personalPositionList.length === 0
-        ) {
-          this.$message.warning("请至少添加一个印章或签名到合同");
-          return;
-        }
+      // 位置签署模式
+      if (
+        this.entPositionList.length === 0 &&
+        this.personalPositionList.length === 0
+      ) {
+        this.$message.warning("请至少添加一个印章或签名到合同");
+        return;
       }
 
       // 准备签署请求数据
       const requestData = {
-        contractId: this.contractId,
+        contractId: +this.contractId,
         signType: this.signType,
         entName: this.entName || "企业名称",
         personalName: this.personalName,
       };
 
-      // 根据签署类型设置不同的参数
-      if (this.signType === "POSITION") {
-        // 位置签署模式
-        requestData.entPositionList = this.entPositionList.map((p) => ({
-          page: p.page,
-          offsetX: p.offsetX,
-          offsetY: p.offsetY,
-          pageWidth: p.pageWidth,
-          pageHeight: p.pageHeight,
-          width: p.width,
-          height: p.height,
-        }));
+      requestData.entPositionList = this.entPositionList.map((p) => ({
+        page: p.page,
+        offsetX: p.offsetX + "",
+        offsetY: p.offsetY + "",
+        pageWidth: p.pageWidth + "",
+        pageHeight: p.pageHeight + "",
+        width: p.width + "",
+        height: p.height + "",
+      }));
 
-        requestData.personalPositionList = this.personalPositionList.map(
-          (p) => ({
-            page: p.page,
-            offsetX: p.offsetX,
-            offsetY: p.offsetY,
-            pageWidth: p.pageWidth,
-            pageHeight: p.pageHeight,
-            width: p.width,
-            height: p.height,
-          })
-        );
-      } else {
-        // 关键字签署模式
-        requestData.entKeyword = this.keywordsForm.entKeyword;
-        requestData.personalKeyword = this.keywordsForm.personalKeyword;
-      }
+      requestData.personalPositionList = this.personalPositionList.map((p) => ({
+        page: p.page,
+        offsetX: p.offsetX + "",
+        offsetY: p.offsetY + "",
+        pageWidth: p.pageWidth + "",
+        pageHeight: p.pageHeight + "",
+        width: p.width + "",
+        height: p.height + "",
+      }));
 
       // 设置印章和签名数据
       if (this.entSealData) {
