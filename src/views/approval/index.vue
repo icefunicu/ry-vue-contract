@@ -16,14 +16,6 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="审核人编号" prop="approverId">
-        <el-input
-          v-model="queryParams.approverId"
-          placeholder="请输入审核人id"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
       <el-form-item label="审核时间" prop="approvedTime">
         <el-date-picker
           clearable
