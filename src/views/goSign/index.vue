@@ -94,6 +94,14 @@
             @click="handleGoSign(scope.row)"
             >去签署</el-button
           >
+
+          <el-button
+            size="mini"
+            type="text"
+            icon="el-icon-download"
+            @click="handleDownload(scope.row)"
+            >下载</el-button
+          >
         </template>
       </el-table-column>
     </el-table>
@@ -172,6 +180,13 @@ export default {
     this.getList();
   },
   methods: {
+    handleDownload(row) {
+      this.download(
+        `http://localhost:8080/contract_${row.contractId}.pdf`,
+        {},
+        "合同.pdf"
+      );
+    },
     /** 查询合同签署列表 */
     getList() {
       this.loading = true;
