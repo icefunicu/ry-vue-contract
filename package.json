@@ -65,6 +65,7 @@
     "vue-demi": "^0.14.6",
     "vue-meta": "2.4.0",
     "vue-pdf-embed": "^1.2.1",
+    "vue-quill-editor": "^3.0.6",
     "vue-router": "3.4.9",
     "vue-signature-pad": "^2.0.5",
     "vuedraggable": "2.24.3",

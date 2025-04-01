@@ -182,7 +182,7 @@ export default {
   },
   methods: {
     handleDownload(row) {
-      const fileUrl = `http://localhost:8080/contract_${row.contractId}.pdf`; // PDF 文件地址
+      const fileUrl = `http://localhost:8080/profile/contract_${row.contractId}.pdf`; // PDF 文件地址
       const fileName = `合同${row.contractId}.pdf`; // 下载时的文件名
 
       fetch(fileUrl)

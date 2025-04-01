@@ -227,7 +227,7 @@ export default {
     }
 
     // 获取PDF URL
-    this.pdfUrl = `http://localhost:8080/contract_${this.contractId}.pdf`;
+    this.pdfUrl = `http://localhost:8080/profile/contract_${this.contractId}.pdf`;
 
     // 获取用户信息
     const userInfo = this.$store.getters.name;

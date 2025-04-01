@@ -91,7 +91,7 @@
     <el-dialog :title="title" :visible.sync="open" width="1200px" append-to-body custom-class="contract-dialog"
       :close-on-click-modal="false">
       <el-form ref="form" :model="form" :rules="rules" label-width="100px" class="contract-form">
-        <el-divider content-position="left">基本信息</el-divider>
+        <!-- <el-divider content-position="left">基本信息</el-divider> -->
         <el-form-item label="合同标题" prop="title">
           <el-input v-model="form.title" placeholder="请输入合同标题" />
         </el-form-item>
@@ -100,8 +100,8 @@
           <quill-editor v-model="form.content" ref="quillEditor" :options="editorOption" style="height: 500px" />
         </el-form-item>
 
-        <el-divider content-position="left">合同配置</el-divider>
-        <el-row :gutter="20">
+        <!-- <el-divider content-position="left">合同配置</el-divider> -->
+        <el-row :gutter="20" style="margin-top: 80px;">
           <el-col :span="8">
             <el-form-item label="合同模版">
               <el-select placeholder="请选择合同模版" v-model="form.optionValue" @change="handleTemplateChange">

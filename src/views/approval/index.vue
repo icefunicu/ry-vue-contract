@@ -182,7 +182,7 @@ export default {
       },
       // 表单参数
       form: {
-        filePath: "http://localhost:8080/contract_4.pdf", // 替换为你的 PDF 文件 URL
+        filePath: "http://localhost:8080/profile/contract_4.pdf", // 替换为你的 PDF 文件 URL
       },
       // 表单校验
       rules: {
