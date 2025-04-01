@@ -10,7 +10,7 @@
     >
       <el-form-item label="合同编号" prop="contractId">
         <el-input
-          v-model="queryParams.signed"
+          v-model="queryParams.contractId"
           placeholder="请输入合同编号"
           clearable
           @keyup.enter.native="handleQuery"
@@ -18,7 +18,7 @@
       </el-form-item>
       <el-form-item label="签署状态" prop="signed">
         <el-select
-          v-model="queryParams.status"
+          v-model="queryParams.signed"
           clearable="true"
           placeholder="请选择签署状态"
         >
@@ -91,6 +91,7 @@
             size="mini"
             type="text"
             icon="el-icon-edit"
+            v-if="scope.row.signed === '待签署'"
             @click="handleGoSign(scope.row)"
             >去签署</el-button
           >
@@ -99,6 +100,7 @@
             size="mini"
             type="text"
             icon="el-icon-download"
+            v-if="scope.row.signed === '已签署'"
             @click="handleDownload(scope.row)"
             >下载</el-button
           >
@@ -161,7 +163,6 @@ export default {
         signed: null,
         signImage: null,
         signTime: null,
-        status: null,
       },
       // 表单参数
       form: {},
@@ -181,11 +182,21 @@ export default {
   },
   methods: {
     handleDownload(row) {
-      this.download(
-        `http://localhost:8080/contract_${row.contractId}.pdf`,
-        {},
-        "合同.pdf"
-      );
+      const fileUrl = `http://localhost:8080/contract_${row.contractId}.pdf`; // PDF 文件地址
+      const fileName = `合同${row.contractId}.pdf`; // 下载时的文件名
+
+      fetch(fileUrl)
+        .then((response) => response.blob()) // 获取文件的二进制数据
+        .then((blob) => {
+          const link = document.createElement("a");
+          link.href = URL.createObjectURL(blob); // 创建临时 URL
+          link.download = fileName; // 设置下载的文件名
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          URL.revokeObjectURL(link.href); // 释放 URL
+        })
+        .catch((error) => console.error("下载失败:", error));
     },
     /** 查询合同签署列表 */
     getList() {
