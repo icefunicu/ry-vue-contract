@@ -582,7 +582,7 @@ export default {
 
     // 返回上一页
     goBack() {
-      this.$router.push({ path: "/contract" });
+      this.$router.push({ path: "/goSign/index" });
     },
   },
 };
