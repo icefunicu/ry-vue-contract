@@ -91,7 +91,7 @@
             size="mini"
             type="text"
             icon="el-icon-edit"
-            v-if="scope.row.signed === '待签署'"
+            v-if="scope.row.signed === '未签署'"
             @click="handleGoSign(scope.row)"
             >去签署</el-button
           >
