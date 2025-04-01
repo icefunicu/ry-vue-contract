@@ -235,7 +235,7 @@
             style="height: 500px"
           /> -->
 
-          <tiny-editor v-model="form.content"></tiny-editor>
+          <tiny-editor v-if="open" v-model="form.content"></tiny-editor>
         </el-form-item>
 
         <!-- <el-divider content-position="left">合同配置</el-divider> -->
