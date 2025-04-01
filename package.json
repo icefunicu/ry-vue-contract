@@ -36,6 +36,8 @@
     "url": "https://gitee.com/y_project/RuoYi-Vue.git"
   },
   "dependencies": {
+    "@tinymce/tinymce-vue": "^2.1.0",
+    "tinymce": "^5.0.11",
     "@hufe921/canvas-editor": "^0.9.105",
     "@riophae/vue-treeselect": "0.4.0",
     "@vue-office/pdf": "^2.0.10",

@@ -135,11 +135,7 @@
           <el-input v-model="form.name" placeholder="请输入模版名称" />
         </el-form-item>
         <el-form-item label="模版内容" prop="content">
-          <quill-editor
-            v-model="form.content"
-            :options="editorOption"
-            style="height: 500px;"
-          ></quill-editor>
+          <tiny-editor v-model="form.content"></tiny-editor>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -159,15 +155,16 @@ import {
   updateTemplates,
   uploadTemplate,
 } from "@/api/template";
-import VueQuillEditor from 'vue-quill-editor';
-import 'quill/dist/quill.core.css';
-import 'quill/dist/quill.snow.css';
-import 'quill/dist/quill.bubble.css';
+import VueQuillEditor from "vue-quill-editor";
+import "quill/dist/quill.core.css";
+import "quill/dist/quill.snow.css";
+import "quill/dist/quill.bubble.css";
 import { Message } from "element-ui";
+import TinyEditor from "@/components/TinyEditor";
 
 export default {
   name: "Templates",
-  components: { quillEditor: VueQuillEditor.quillEditor },
+  components: { TinyEditor },
   data() {
     return {
       fileList: [],
@@ -178,22 +175,22 @@ export default {
         placeholder: "请输入内容...",
         modules: {
           toolbar: [
-            ['bold', 'italic', 'underline', 'strike'],
-            ['blockquote', 'code-block'],
-            [{ 'header': 1 }, { 'header': 2 }],
-            [{ 'list': 'ordered' }, { 'list': 'bullet' }],
-            [{ 'script': 'sub' }, { 'script': 'super' }],
-            [{ 'indent': '-1' }, { 'indent': '+1' }],
-            [{ 'direction': 'rtl' }],
-            [{ 'size': ['small', false, 'large', 'huge'] }],
-            [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
-            [{ 'color': [] }, { 'background': [] }],
-            [{ 'font': [] }],
-            [{ 'align': [] }],
-            ['clean'],
-            ['link', 'image', 'video', 'formula']
-          ]
-        }
+            ["bold", "italic", "underline", "strike"],
+            ["blockquote", "code-block"],
+            [{ header: 1 }, { header: 2 }],
+            [{ list: "ordered" }, { list: "bullet" }],
+            [{ script: "sub" }, { script: "super" }],
+            [{ indent: "-1" }, { indent: "+1" }],
+            [{ direction: "rtl" }],
+            [{ size: ["small", false, "large", "huge"] }],
+            [{ header: [1, 2, 3, 4, 5, 6, false] }],
+            [{ color: [] }, { background: [] }],
+            [{ font: [] }],
+            [{ align: [] }],
+            ["clean"],
+            ["link", "image", "video", "formula"],
+          ],
+        },
       },
       // 遮罩层
       loading: true,
