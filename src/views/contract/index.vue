@@ -32,7 +32,7 @@
       </el-form>
     </el-card>
 
-    <el-row :gutter="20" class="mb8 action-bar">
+    <el-row :gutter="20" class="mb8 action-bar" style="margin-top: 10px">
       <el-col :span="1.5">
         <el-button
           type="primary"
@@ -63,16 +63,6 @@
           :disabled="multiple"
           @click="handleDelete"
           >删除</el-button
-        >
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="warning"
-          plain
-          icon="el-icon-download"
-          size="mini"
-          @click="handleExport"
-          >导出</el-button
         >
       </el-col>
       <right-toolbar
@@ -121,7 +111,9 @@
               :content="scope.row.content"
               placement="top-start"
             >
-              <div class="content-preview">{{ scope.row.content }}</div>
+              <div class="content-preview text-ellipsis">
+                {{ scope.row.content }}
+              </div>
             </el-tooltip>
           </template>
         </el-table-column>
@@ -170,7 +162,9 @@
               icon="el-icon-check"
               circle
               :disabled="
-                !(scope.row.status === '草稿' || scope.row.status === '待修改') || scope.row.createdBy!== userId
+                !(
+                  scope.row.status === '草稿' || scope.row.status === '待修改'
+                ) || scope.row.createdBy !== userId
               "
               @click="handleSubmitContract(scope.row)"
               title="提交"
@@ -181,7 +175,9 @@
               icon="el-icon-edit"
               circle
               :disabled="
-                !(scope.row.status === '草稿' || scope.row.status === '待修改') || scope.row.createdBy !== userId
+                !(
+                  scope.row.status === '草稿' || scope.row.status === '待修改'
+                ) || scope.row.createdBy !== userId
               "
               @click="handleUpdate(scope.row)"
               title="修改"
@@ -411,6 +407,7 @@ import {
   submitContract,
   submitOpinion,
   pass,
+  search,
 } from "@/api//contract";
 import store from "@/store";
 
@@ -572,6 +569,13 @@ export default {
     /** 搜索按钮操作 */
     handleQuery() {
       this.queryParams.pageNum = 1;
+      if (this.queryParams.title !== "") {
+        search(this.queryParams).then((response) => {
+          this.contractList = response.rows;
+          this.total = response.total;
+        });
+        return;
+      }
       this.getList();
     },
     /** 重置按钮操作 */
@@ -599,6 +603,7 @@ export default {
         this.form = response.data;
         this.open = true;
         this.title = "修改【合同】";
+        this.getUserList();
       });
     },
     /** 提交按钮 */
@@ -657,3 +662,17 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.text-ellipsis {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 180px; /* 根据实际需要调整 */
+  display: inline-block;
+}
+
+.content-preview {
+  line-height: 1.5;
+}
+</style>

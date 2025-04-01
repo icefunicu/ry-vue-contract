@@ -77,7 +77,20 @@
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="id" align="center" prop="id" />
       <el-table-column label="模版名称" align="center" prop="name" />
-      <el-table-column label="模版内容" align="center" prop="content" />
+      <el-table-column label="模版内容" align="center" prop="content">
+        <template slot-scope="scope">
+          <el-tooltip
+            class="item"
+            effect="dark"
+            :content="scope.row.content"
+            placement="top-start"
+          >
+            <div class="content-preview text-ellipsis">
+              {{ scope.row.content }}
+            </div>
+          </el-tooltip>
+        </template>
+      </el-table-column>
       <el-table-column
         label="操作"
         align="center"
@@ -318,3 +331,17 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.text-ellipsis {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 180px;
+  display: inline-block;
+}
+
+.content-preview {
+  line-height: 1.5;
+}
+</style>

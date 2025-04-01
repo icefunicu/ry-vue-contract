@@ -76,3 +76,11 @@ export function pass(data) {
     data: data
   })
 }
+
+export function search(data) {
+  return request({
+    url: '/contract/search',
+    method: 'post',
+    data: data
+  })
+}
