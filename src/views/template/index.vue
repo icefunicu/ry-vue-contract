@@ -135,19 +135,11 @@
           <el-input v-model="form.name" placeholder="请输入模版名称" />
         </el-form-item>
         <el-form-item label="模版内容" prop="content">
-          <Toolbar
-            style="border-bottom: 1px solid #ccc"
-            :editor="editor"
-            :defaultConfig="toolbarConfig"
-            :mode="mode"
-          />
-          <Editor
-            style="height: 500px; overflow-y: hidden"
+          <quill-editor
             v-model="form.content"
-            :defaultConfig="editorConfig"
-            :mode="mode"
-            @onCreated="onCreated"
-          />
+            :options="editorOption"
+            style="height: 500px;"
+          ></quill-editor>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -167,22 +159,42 @@ import {
   updateTemplates,
   uploadTemplate,
 } from "@/api/template";
-import { Editor, Toolbar } from "@wangeditor/editor-for-vue";
+import VueQuillEditor from 'vue-quill-editor';
+import 'quill/dist/quill.core.css';
+import 'quill/dist/quill.snow.css';
+import 'quill/dist/quill.bubble.css';
 import { Message } from "element-ui";
 
 export default {
   name: "Templates",
-  components: { Editor, Toolbar },
+  components: { quillEditor: VueQuillEditor.quillEditor },
   data() {
     return {
       fileList: [],
       // 不支持多选
       multiple: false,
       formData: "",
-      editor: null,
-      toolbarConfig: {},
-      editorConfig: { placeholder: "请输入内容..." },
-      mode: "default", // or 'simple'
+      editorOption: {
+        placeholder: "请输入内容...",
+        modules: {
+          toolbar: [
+            ['bold', 'italic', 'underline', 'strike'],
+            ['blockquote', 'code-block'],
+            [{ 'header': 1 }, { 'header': 2 }],
+            [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+            [{ 'script': 'sub' }, { 'script': 'super' }],
+            [{ 'indent': '-1' }, { 'indent': '+1' }],
+            [{ 'direction': 'rtl' }],
+            [{ 'size': ['small', false, 'large', 'huge'] }],
+            [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+            [{ 'color': [] }, { 'background': [] }],
+            [{ 'font': [] }],
+            [{ 'align': [] }],
+            ['clean'],
+            ['link', 'image', 'video', 'formula']
+          ]
+        }
+      },
       // 遮罩层
       loading: true,
       // 选中数组
@@ -218,9 +230,7 @@ export default {
     this.getList();
   },
   beforeDestroy() {
-    const editor = this.editor;
-    if (!editor) return;
-    editor.destroy(); // 组件销毁时，及时销毁编辑器
+    // Quill编辑器不需要手动销毁
   },
   methods: {
     handleUploadTemplate(file) {
@@ -236,9 +246,7 @@ export default {
         });
       });
     },
-    onCreated(editor) {
-      this.editor = Object.seal(editor); // 一定要用 Object.seal() ，否则会报错
-    },
+    // Quill编辑器不需要onCreated方法
     /** 查询【请填写功能名称】列表 */
     getList() {
       this.loading = true;
