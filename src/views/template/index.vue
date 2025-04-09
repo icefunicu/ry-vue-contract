@@ -135,7 +135,7 @@
           <el-input v-model="form.name" placeholder="请输入模版名称" />
         </el-form-item>
         <el-form-item label="模版内容" prop="content">
-          <tiny-editor v-model="form.content"></tiny-editor>
+          <tiny-editor v-if="open" v-model="form.content"></tiny-editor>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
