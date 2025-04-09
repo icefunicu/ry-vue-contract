@@ -1,118 +1,287 @@
 <template>
-  <!-- 富文本 -->
-  <div>
-    <editor
-      v-model="content"
-      :init="init"
-      :disabled="disabled"
-      @onClick="onClick"
-    ></editor>
+  <div class="app-container home">
+    <el-row :gutter="20">
+      <el-col :span="24" class="welcome-header">
+        <div class="welcome-title">
+          <h1>电子合同签署平台</h1>
+          <p class="version-info">
+            <b>当前版本:</b> <span>v{{ version }}</span>
+          </p>
+        </div>
+      </el-col>
+    </el-row>
+
+    <el-divider content-position="center">平台功能</el-divider>
+
+    <el-row :gutter="20" class="feature-section">
+      <el-col :xs="24" :sm="12" :md="8" :lg="6" v-for="(feature, index) in features" :key="index">
+        <el-card shadow="hover" class="feature-card">
+          <div class="feature-icon">
+            <i :class="feature.icon"></i>
+          </div>
+          <div class="feature-content">
+            <h3>{{ feature.title }}</h3>
+            <p>{{ feature.description }}</p>
+          </div>
+        </el-card>
+      </el-col>
+    </el-row>
+
+    <el-divider content-position="center">快捷入口</el-divider>
+
+    <el-row :gutter="20" class="shortcut-section">
+      <el-col :xs="24" :sm="12" :md="8" :lg="6" v-for="(shortcut, index) in shortcuts" :key="index">
+        <el-card shadow="hover" class="shortcut-card" @click.native="goTarget(shortcut.link)">
+          <div class="shortcut-icon">
+            <i :class="shortcut.icon"></i>
+          </div>
+          <div class="shortcut-content">
+            <h3>{{ shortcut.title }}</h3>
+          </div>
+        </el-card>
+      </el-col>
+    </el-row>
+
   </div>
 </template>
 
 <script>
-import tinymce from "tinymce/tinymce";
-import Editor from "@tinymce/tinymce-vue";
-import "tinymce/icons/default/icons";
-import "tinymce/themes/silver";
-import "tinymce/plugins/image";
-import "tinymce/plugins/media";
-import "tinymce/plugins/table";
-import "tinymce/plugins/lists";
-import "tinymce/plugins/contextmenu";
-import "tinymce/plugins/wordcount";
-import "tinymce/plugins/colorpicker";
-import "tinymce/plugins/textcolor";
-import "tinymce/plugins/preview";
-import "tinymce/plugins/code";
-import "tinymce/plugins/link";
-import "tinymce/plugins/advlist";
-import "tinymce/plugins/codesample";
-import "tinymce/plugins/hr";
-import "tinymce/plugins/fullscreen";
-import "tinymce/plugins/textpattern";
-import "tinymce/plugins/searchreplace";
-import "tinymce/plugins/autolink";
-import "tinymce/plugins/directionality";
-import "tinymce/plugins/visualblocks";
-import "tinymce/plugins/visualchars";
-import "tinymce/plugins/template";
-import "tinymce/plugins/charmap";
-import "tinymce/plugins/nonbreaking";
-import "tinymce/plugins/insertdatetime";
-import "tinymce/plugins/imagetools";
-import "tinymce/plugins/autosave";
-import "tinymce/plugins/autoresize";
-// 扩展插件
-// import "@/assets/tinymce/plugins/";
-// import "@/assets/tinymce/plugins/bdmap/plugin";
-
 export default {
-  components: {
-    Editor,
-  },
-  props: {
-    value: {
-      type: String,
-      default: "",
-    },
-    disabled: {
-      type: Boolean,
-      default: false,
-    },
-    plugins: {
-      type: [String, Array],
-      default:
-        "preview searchreplace autolink directionality visualblocks visualchars fullscreen image link media template code codesample table charmap hr nonbreaking insertdatetime advlist lists wordcount imagetools textpattern autosave bdmap autoresize lineheight",
-    },
-    toolbar: {
-      type: [String, Array],
-      default:
-        "code undo redo restoredraft | cut copy paste pastetext | forecolor backcolor bold italic underline strikethrough link codesample | alignleft aligncenter alignright alignjustify outdent indent lineheight formatpainter | \
-    styleselect formatselect fontselect fontsizeselect | bullist numlist | blockquote subscript superscript removeformat | \
-    table image media charmap hr pagebreak insertdatetime | bdmap fullscreen preview",
-    },
-  },
+  name: "Index",
   data() {
     return {
-      //初始化配置
-      init: {
-        language_url: "/static/tinymce/langs/zh_CN.js",
-        language: "zh_CN",
-        skin_url: "/static/tinymce/skins/ui/oxide",
-        height: 770,
-        min_height: 770,
-        max_height: 770,
-        toolbar_mode: "wrap",
-        plugins: this.plugins,
-        toolbar: this.toolbar,
-        content_style: "p {margin: 5px 0;}",
-        fontsize_formats: "12px 14px 16px 18px 24px 36px 48px 56px 72px",
-        font_formats:
-          "微软雅黑=Microsoft YaHei,Helvetica Neue,PingFang SC,sans-serif;苹果苹方=PingFang SC,Microsoft YaHei,sans-serif;宋体=simsun,serif;仿宋体=FangSong,serif;黑体=SimHei,sans-serif;Arial=arial,helvetica,sans-serif;Arial Black=arial black,avant garde;Book Antiqua=book antiqua,palatino;",
-        branding: false,
-        //此处为图片上传处理函数，这个直接用了base64的图片形式上传图片，
-        //如需ajax上传可参考https://www.tiny.cloud/docs/configure/file-image-upload/#images_upload_handler
-        images_upload_handler: (blobInfo, success, failure) => {
-          const img = "data:image/jpeg;base64," + blobInfo.base64();
-          success(img);
+      // 版本号
+      version: "3.8.9",
+      // 功能特点
+      features: [
+        {
+          icon: "el-icon-document-checked",
+          title: "电子签名",
+          description: "支持多种电子签名方式，确保合同签署的合法性和有效性"
         },
-      },
-      content: this.value,
+        {
+          icon: "el-icon-lock",
+          title: "安全保障",
+          description: "采用先进加密技术，保障合同数据安全和用户隐私"
+        },
+        {
+          icon: "el-icon-time",
+          title: "高效处理",
+          description: "快速完成合同签署流程，提高工作效率"
+        },
+        {
+          icon: "el-icon-folder",
+          title: "合同管理",
+          description: "便捷的合同存储、查询和管理功能"
+        }
+      ],
+      // 快捷入口
+      shortcuts: [
+        {
+          icon: "el-icon-plus",
+          title: "新建合同",
+          link: "/contract/index"
+        },
+        {
+          icon: "el-icon-edit",
+          title: "待签合同",
+          link: "/gosign/index"
+        },
+        {
+          icon: "el-icon-document",
+          title: "合同模板",
+          link: "/template/index"
+        }
+      ]
     };
   },
-  mounted() {
-    tinymce.init({});
-  },
-  methods: {},
-  watch: {
-    value(newValue) {
-      this.content = newValue;
-    },
-    content(newValue) {
-      this.$emit("input", newValue);
+  methods: {
+    goTarget(href) {
+      window.open(href, "_blank");
     },
   },
 };
 </script>
-<style scoped lang="scss"></style>
+
+<style scoped lang="scss">
+.home {
+  font-family: "open sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  color: #676a6c;
+  overflow-x: hidden;
+
+  .welcome-header {
+    text-align: center;
+    padding: 30px 0;
+    background: linear-gradient(135deg, #1890ff 0%, #36cfc9 100%);
+    border-radius: 8px;
+    margin-bottom: 20px;
+    color: white;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+
+    .welcome-title {
+      h1 {
+        font-size: 36px;
+        font-weight: 600;
+        margin-bottom: 10px;
+      }
+
+      .version-info {
+        font-size: 16px;
+        opacity: 0.9;
+      }
+    }
+  }
+
+  .el-divider {
+    margin: 30px 0;
+    
+    .el-divider__text {
+      font-size: 18px;
+      font-weight: 600;
+      color: #1890ff;
+    }
+  }
+
+  .feature-section, .shortcut-section {
+    margin-bottom: 30px;
+    
+    .el-col {
+      margin-bottom: 20px;
+    }
+  }
+
+  .feature-card {
+    height: 200px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    transition: all 0.3s;
+    
+    &:hover {
+      transform: translateY(-5px);
+    }
+
+    .feature-icon {
+      font-size: 48px;
+      color: #1890ff;
+      margin-bottom: 15px;
+    }
+
+    .feature-content {
+      h3 {
+        font-size: 18px;
+        margin-bottom: 10px;
+        color: #333;
+      }
+
+      p {
+        font-size: 14px;
+        color: #666;
+        line-height: 1.5;
+      }
+    }
+  }
+
+  .shortcut-card {
+    height: 150px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s;
+    
+    &:hover {
+      transform: translateY(-5px);
+      background-color: #f0f9ff;
+    }
+
+    .shortcut-icon {
+      font-size: 36px;
+      color: #1890ff;
+      margin-bottom: 10px;
+    }
+
+    .shortcut-content {
+      h3 {
+        font-size: 16px;
+        color: #333;
+      }
+    }
+  }
+
+  .stats-section {
+    margin-bottom: 30px;
+
+    .stat-item {
+      text-align: center;
+      padding: 20px 0;
+
+      .stat-number {
+        font-size: 36px;
+        font-weight: 600;
+        color: #1890ff;
+        margin-bottom: 10px;
+      }
+
+      .stat-title {
+        font-size: 16px;
+        color: #666;
+      }
+    }
+  }
+
+  blockquote {
+    padding: 10px 20px;
+    margin: 0 0 20px;
+    font-size: 17.5px;
+    border-left: 5px solid #eee;
+  }
+  
+  hr {
+    margin-top: 20px;
+    margin-bottom: 20px;
+    border: 0;
+    border-top: 1px solid #eee;
+  }
+  
+  ul {
+    padding: 0;
+    margin: 0;
+    list-style-type: none;
+  }
+
+  h2 {
+    margin-top: 10px;
+    font-size: 26px;
+    font-weight: 100;
+  }
+
+  h4 {
+    margin-top: 0px;
+  }
+
+  p {
+    margin-top: 10px;
+
+    b {
+      font-weight: 700;
+    }
+  }
+
+  .update-log {
+    ol {
+      display: block;
+      list-style-type: decimal;
+      margin-block-start: 1em;
+      margin-block-end: 1em;
+      margin-inline-start: 0;
+      margin-inline-end: 0;
+      padding-inline-start: 40px;
+    }
+  }
+}
+</style>
