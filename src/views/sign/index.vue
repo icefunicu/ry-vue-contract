@@ -232,6 +232,12 @@ export default {
     // 获取用户信息
     const userInfo = this.$store.getters.name;
     this.personalName = userInfo || "签署人";
+
+    // 根据路由参数控制侧边栏显示
+    const hideLayout = this.$route.query.hide;
+    if (hideLayout) {
+      this.$store.dispatch("app/toggleSideBarHide", true);
+    }
   },
   mounted() {
     // 初始化签名板

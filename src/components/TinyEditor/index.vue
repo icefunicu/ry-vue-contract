@@ -43,6 +43,8 @@ import "tinymce/plugins/insertdatetime";
 import "tinymce/plugins/imagetools";
 import "tinymce/plugins/autosave";
 import "tinymce/plugins/autoresize";
+import "@/assets/tinymce/importword";
+
 // 扩展插件
 // import "@/assets/tinymce/plugins/";
 // import "@/assets/tinymce/plugins/bdmap/plugin";
@@ -63,12 +65,12 @@ export default {
     plugins: {
       type: [String, Array],
       default:
-        "preview searchreplace autolink directionality visualblocks visualchars fullscreen image link media template code codesample table charmap hr nonbreaking insertdatetime advlist lists wordcount imagetools textpattern autosave bdmap autoresize lineheight",
+        "preview searchreplace autolink directionality visualblocks visualchars fullscreen image link media template code codesample table charmap hr nonbreaking insertdatetime advlist lists wordcount imagetools textpattern autosave bdmap autoresize lineheight importword",
     },
     toolbar: {
       type: [String, Array],
       default:
-        "code undo redo restoredraft | cut copy paste pastetext | forecolor backcolor bold italic underline strikethrough link codesample | alignleft aligncenter alignright alignjustify outdent indent lineheight formatpainter | \
+        "importword | code undo redo restoredraft | cut copy paste pastetext | forecolor backcolor bold italic underline strikethrough link codesample | alignleft aligncenter alignright alignjustify outdent indent lineheight formatpainter | \
     styleselect formatselect fontselect fontsizeselect | bullist numlist | blockquote subscript superscript removeformat | \
     table image media charmap hr pagebreak insertdatetime | bdmap fullscreen preview",
     },

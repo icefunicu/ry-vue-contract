@@ -54,14 +54,15 @@
         >
       </el-col>
       <el-col :span="1.5">
-        <el-upload
+        <!-- <el-upload
           class="upload"
           action="string"
           :http-request="handleUploadTemplate"
           :file-list="fileList"
         >
-          <el-button size="small" type="primary">点击导入模版文件</el-button>
-        </el-upload>
+        </el-upload> -->
+        <el-button size="small" type="primary" @click="handleAdd">添加模版</el-button>
+
       </el-col>
       <right-toolbar
         :showSearch.sync="showSearch"
