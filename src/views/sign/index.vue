@@ -8,7 +8,7 @@
         <div class="pdf-container">
           <vue-office-pdf
             :src="pdfUrl"
-            style="height: 75vh"
+            style="height: 100%;width: 100%;position: relative;"
             @rendered="pdfRendered"
             ref="pdfViewer"
           />
@@ -215,6 +215,8 @@ export default {
       signSuccessDialogVisible: false,
       entName: "",
       personalName: "",
+      pollingTimer: null, // 轮询定时器
+      pollingInterval: 5000, // 轮询间隔，默认5秒
     };
   },
   created() {
@@ -246,8 +248,36 @@ export default {
         this.initSignaturePad();
       }
     });
+
+    // 启动轮询更新PDF
+    this.startPolling();
+  },
+
+  beforeDestroy() {
+    // 组件销毁前清除轮询定时器
+    this.stopPolling();
   },
   methods: {
+    // 开始轮询更新PDF
+    startPolling() {
+      // 清除可能存在的旧定时器
+      this.stopPolling();
+
+      // 设置新的定时器
+      this.pollingTimer = setInterval(() => {
+        // 添加时间戳参数避免缓存
+        const timestamp = new Date().getTime();
+        this.pdfUrl = `http://localhost:8080/profile/contract_${this.contractId}.pdf?t=${timestamp}`;
+      }, this.pollingInterval);
+    },
+
+    // 停止轮询
+    stopPolling() {
+      if (this.pollingTimer) {
+        clearInterval(this.pollingTimer);
+        this.pollingTimer = null;
+      }
+    },
     // PDF渲染完成回调
     pdfRendered() {
       console.log("PDF渲染完成");
@@ -260,7 +290,7 @@ export default {
     initSignaturePad() {
       const canvas = this.$refs.signaturePad;
       this.signaturePad = new SignaturePad(canvas, {
-        backgroundColor: "rgba(255, 255, 255, 1)",
+        backgroundColor: "rgba(255, 255, 255, 0)",
         penColor: "rgba(0, 0, 0, 1)",
       });
     },
@@ -467,19 +497,37 @@ export default {
       const pdfContainer = this.$refs.pdfViewer.$el;
       const pdfRect = pdfContainer.getBoundingClientRect();
 
-      // 计算相对于PDF容器的位置
-      const offsetX = rect.left - pdfRect.left;
-      const offsetY = rect.top - pdfRect.top;
+      // 获取元素的transform值
+      const transform = element.style.transform;
+      const translateValues = transform.match(/translate\((.+)px,\s*(.+)px\)/);
+
+      // 如果能够获取到transform值，则使用transform值计算位置
+      let offsetX, offsetY;
+      if (translateValues && translateValues.length === 3) {
+        // 使用transform值计算位置，这样更准确
+        offsetX = parseFloat(translateValues[1]) + 50; // 50是初始left值
+        offsetY = parseFloat(translateValues[2]) + 50; // 50是初始top值
+      } else {
+        // 计算相对于PDF容器的位置（备用方案）
+        offsetX = rect.left - pdfRect.left;
+        offsetY = rect.top - pdfRect.top;
+      }
 
       // 获取当前页码和页面尺寸
       const page = 1; // 默认为第一页，实际应该从PDF查看器获取
       const pageWidth = pdfRect.width;
       const pageHeight = pdfRect.height;
 
+      // 计算相对坐标（百分比），这样在不同尺寸的设备上也能保持一致
+      const relativeX = (offsetX / pageWidth).toFixed(4);
+      const relativeY = (offsetY / pageHeight).toFixed(4);
+
       const position = {
         page: page,
         offsetX: offsetX,
         offsetY: offsetY,
+        relativeX: relativeX, // 添加相对坐标
+        relativeY: relativeY, // 添加相对坐标
         pageWidth: pageWidth,
         pageHeight: pageHeight,
         width: type === "ent" ? 200 : 150,
@@ -527,11 +575,11 @@ export default {
         entName: this.entName || "企业名称",
         personalName: this.personalName,
       };
-
+      debugger;
       requestData.entPositionList = this.entPositionList.map((p) => ({
         page: p.page,
-        offsetX: p.offsetX + "",
-        offsetY: p.offsetY + "",
+        offsetX: p.relativeX ? (p.relativeX * p.pageWidth).toFixed(2) : p.offsetX + "",
+        offsetY: p.relativeY ? (p.relativeY * p.pageHeight).toFixed(2) : p.offsetY + "",
         pageWidth: p.pageWidth + "",
         pageHeight: p.pageHeight + "",
         width: p.width + "",
@@ -540,8 +588,8 @@ export default {
 
       requestData.personalPositionList = this.personalPositionList.map((p) => ({
         page: p.page,
-        offsetX: p.offsetX + "",
-        offsetY: p.offsetY + "",
+        offsetX: p.relativeX ? (p.relativeX * p.pageWidth).toFixed(2) : p.offsetX + "",
+        offsetY: p.relativeY ? (p.relativeY * p.pageHeight).toFixed(2) - 10 : p.offsetY + "",
         pageWidth: p.pageWidth + "",
         pageHeight: p.pageHeight + "",
         width: p.width + "",
