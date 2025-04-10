@@ -8,7 +8,7 @@
         <div class="pdf-container">
           <vue-office-pdf
             :src="pdfUrl"
-            style="height: 100%;width: 100%;position: relative;"
+            style="height: 100%; width: 100%; position: relative"
             @rendered="pdfRendered"
             ref="pdfViewer"
           />
@@ -237,7 +237,7 @@ export default {
 
     // 根据路由参数控制侧边栏显示
     const hideLayout = this.$route.query.hide;
-    if (hideLayout) {
+    if (hideLayout === 'true') {
       this.$store.dispatch("app/toggleSideBarHide", true);
     }
   },
@@ -578,8 +578,12 @@ export default {
       debugger;
       requestData.entPositionList = this.entPositionList.map((p) => ({
         page: p.page,
-        offsetX: p.relativeX ? (p.relativeX * p.pageWidth).toFixed(2) : p.offsetX + "",
-        offsetY: p.relativeY ? (p.relativeY * p.pageHeight).toFixed(2) : p.offsetY + "",
+        offsetX: p.relativeX
+          ? (p.relativeX * p.pageWidth).toFixed(2)
+          : p.offsetX + "",
+        offsetY: p.relativeY
+          ? (p.relativeY * p.pageHeight).toFixed(2)
+          : p.offsetY + "",
         pageWidth: p.pageWidth + "",
         pageHeight: p.pageHeight + "",
         width: p.width + "",
@@ -588,8 +592,12 @@ export default {
 
       requestData.personalPositionList = this.personalPositionList.map((p) => ({
         page: p.page,
-        offsetX: p.relativeX ? (p.relativeX * p.pageWidth).toFixed(2) : p.offsetX + "",
-        offsetY: p.relativeY ? (p.relativeY * p.pageHeight).toFixed(2) - 10 : p.offsetY + "",
+        offsetX: p.relativeX
+          ? (p.relativeX * p.pageWidth).toFixed(2)
+          : p.offsetX + "",
+        offsetY: p.relativeY
+          ? (p.relativeY * p.pageHeight).toFixed(2) - 10
+          : p.offsetY + "",
         pageWidth: p.pageWidth + "",
         pageHeight: p.pageHeight + "",
         width: p.width + "",

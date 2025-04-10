@@ -251,7 +251,7 @@ export default {
     },
     /** goSign */
     handleGoSign(row) {
-      this.$router.push({ path: "/sign/index", query: { id: row.contractId, hide: true } });
+      this.$router.push({ path: "/sign/index", query: { id: row.contractId, hide: false } });
     },
     /** 提交按钮 */
     submitForm() {
