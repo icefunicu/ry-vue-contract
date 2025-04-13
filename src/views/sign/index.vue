@@ -514,7 +514,9 @@ export default {
       }
 
       // 获取当前页码和页面尺寸
-      const page = 1; // 默认为第一页，实际应该从PDF查看器获取
+      const page = (element.getAttribute("data-y") / 1639) + 1; // 默认为第一页，实际应该从PDF查看器获取
+      console.log(element.getAttribute("data-y"));
+      console.log(page);
       const pageWidth = pdfRect.width;
       const pageHeight = pdfRect.height;
 
