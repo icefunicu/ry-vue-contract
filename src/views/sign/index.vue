@@ -5,10 +5,13 @@
         <span>合同签署</span>
       </div>
       <div class="contract-container">
-        <div class="pdf-container">
+        <div
+          class="pdf-container"
+          style="height: 1131px; width: 800px; position: relative"
+        >
           <vue-office-pdf
             :src="pdfUrl"
-            style="height: 100%; width: 100%; position: relative"
+            style="height: 1131px; width: 800px"
             @rendered="pdfRendered"
             ref="pdfViewer"
           />
@@ -216,7 +219,7 @@ export default {
       entName: "",
       personalName: "",
       pollingTimer: null, // 轮询定时器
-      pollingInterval: 5000, // 轮询间隔，默认5秒
+      pollingInterval: 500000, // 轮询间隔，默认5秒
     };
   },
   created() {
@@ -237,18 +240,11 @@ export default {
 
     // 根据路由参数控制侧边栏显示
     const hideLayout = this.$route.query.hide;
-    if (hideLayout === 'true') {
+    if (hideLayout === "true") {
       this.$store.dispatch("app/toggleSideBarHide", true);
     }
   },
   mounted() {
-    // 初始化签名板
-    this.$nextTick(() => {
-      if (this.$refs.signaturePad) {
-        this.initSignaturePad();
-      }
-    });
-
     // 启动轮询更新PDF
     this.startPolling();
   },
@@ -282,16 +278,46 @@ export default {
     pdfRendered() {
       console.log("PDF渲染完成");
       this.$nextTick(() => {
+        // 获取vue-office-pdf-wrapper容器
+        const pdfWrapper = this.$refs.pdfViewer.$el.querySelector(
+          ".vue-office-pdf-wrapper"
+        );
+        if (pdfWrapper && this.$refs.pdfOverlay) {
+          // 将pdf-overlay移动到vue-office-pdf-wrapper容器中
+          pdfWrapper.appendChild(this.$refs.pdfOverlay);
+        }
         this.initDragDrop();
+
+        // 在PDF渲染完成后初始化签名板
+        if (this.$refs.signaturePad) {
+          this.initSignaturePad();
+        }
       });
     },
 
     // 初始化签名板
     initSignaturePad() {
       const canvas = this.$refs.signaturePad;
+      if (!canvas) return;
+
+      // 设置canvas样式
+      canvas.style.border = "1px solid #ccc";
+      canvas.style.backgroundColor = "#fff";
+      canvas.style.cursor = "crosshair";
+
+      // 销毁旧的实例
+      if (this.signaturePad) {
+        this.signaturePad.off();
+      }
+
+      // 创建新的签名板实例
       this.signaturePad = new SignaturePad(canvas, {
         backgroundColor: "rgba(255, 255, 255, 0)",
         penColor: "rgba(0, 0, 0, 1)",
+        minWidth: 1,
+        maxWidth: 2.5,
+        throttle: 16,
+        velocityFilterWeight: 0.7,
       });
     },
 
@@ -514,7 +540,8 @@ export default {
       }
 
       // 获取当前页码和页面尺寸
-      const page = (element.getAttribute("data-y") / 1639) + 1; // 默认为第一页，实际应该从PDF查看器获取
+      const page = Math.floor(element.getAttribute("data-y") / 1095 + 1);
+      if (page < 1) page = 1; // 默认为第一页，实际应该从PDF查看器获取
       console.log(element.getAttribute("data-y"));
       console.log(page);
       const pageWidth = pdfRect.width;
@@ -591,7 +618,9 @@ export default {
         width: p.width + "",
         height: p.height + "",
       }));
-
+      requestData.entPositionList.forEach((item) => {
+        item.offsetY = (item.offsetY - (item.page - 1) * 1095 - 30) + "";
+      });
       requestData.personalPositionList = this.personalPositionList.map((p) => ({
         page: p.page,
         offsetX: p.relativeX
@@ -605,7 +634,9 @@ export default {
         width: p.width + "",
         height: p.height + "",
       }));
-
+      requestData.personalPositionList.forEach((item) => {
+        item.offsetY = item.page <= 1 ? (item.offsetY - (item.page - 1) * 1095) + "" : (item.offsetY - (item.page *  13) - (item.page - 1) * 1095)  + "";
+      });
       // 设置印章和签名数据
       if (this.entSealData) {
         requestData.entSeal = this.entSealData;
