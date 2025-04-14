@@ -169,13 +169,16 @@
           <div v-if="signType === 2" class="keywords-options">
             <h4>关键字设置</h4>
             <el-form :model="keywordsForm" label-width="100px">
-              <el-form-item label="企业印章关键字">
+              <el-form-item v-if="activeTab === 'entSeal'" label="印章关键字">
                 <el-input
                   v-model="keywordsForm.entKeyword"
                   placeholder="请输入企业印章定位关键字"
                 ></el-input>
               </el-form-item>
-              <el-form-item label="个人签名关键字">
+              <el-form-item
+                v-if="activeTab === 'personalSign'"
+                label="签名关键字"
+              >
                 <el-input
                   v-model="keywordsForm.personalKeyword"
                   placeholder="请输入个人签名定位关键字"
@@ -672,8 +675,8 @@ export default {
         });
       } else if (this.signType === 2) {
         // 关键字签署模式
-        if (this.keywordsForm.personalName) {
-          requestData.personalKeyword = this.keywordsForm.personalName;
+        if (this.keywordsForm.personalKeyword) {
+          requestData.personalKeyword = this.keywordsForm.personalKeyword;
         }
         if (this.keywordsForm.entKeyword) {
           requestData.entKeyword = this.keywordsForm.entKeyword;
