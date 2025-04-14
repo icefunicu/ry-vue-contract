@@ -252,7 +252,7 @@ export default {
       entName: "",
       personalName: "",
       pollingTimer: null, // 轮询定时器
-      pollingInterval: 50000, // 轮询间隔，默认5秒
+      pollingInterval: 5000, // 轮询间隔，默认5秒
     };
   },
   created() {
