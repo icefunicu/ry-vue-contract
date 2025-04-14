@@ -174,6 +174,7 @@
                   v-model="keywordsForm.entKeyword"
                   placeholder="请输入企业印章定位关键字"
                 ></el-input>
+                <el-button type="text"  @click="handleKeywordEnt">默认关键字</el-button>
               </el-form-item>
               <el-form-item
                 v-if="activeTab === 'personalSign'"
@@ -183,6 +184,7 @@
                   v-model="keywordsForm.personalKeyword"
                   placeholder="请输入个人签名定位关键字"
                 ></el-input>
+                <el-button type="text"  @click="handleKeywordPersonal">默认关键字</el-button>
               </el-form-item>
             </el-form>
           </div>
@@ -297,7 +299,13 @@ export default {
         this.pdfUrl = `http://localhost:8080/profile/contract_${this.contractId}.pdf?t=${timestamp}`;
       }, this.pollingInterval);
     },
-
+    handleKeywordEnt() {
+      console.log(111);
+      this.keywordsForm.entKeyword = "电子印章盖章处";
+    },
+    handleKeywordPersonal() {
+      this.keywordsForm.personalKeyword = "个人手写签名处";
+    },
     // 停止轮询
     stopPolling() {
       if (this.pollingTimer) {
