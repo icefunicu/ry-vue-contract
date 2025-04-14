@@ -219,7 +219,7 @@ export default {
       entName: "",
       personalName: "",
       pollingTimer: null, // 轮询定时器
-      pollingInterval: 500000, // 轮询间隔，默认5秒
+      pollingInterval: 50000, // 轮询间隔，默认5秒
     };
   },
   created() {
@@ -695,7 +695,7 @@ export default {
 }
 
 .pdf-container {
-  flex: 2;
+  /* flex: 2; */
   position: relative;
   border: 1px solid #e6e6e6;
   border-radius: 4px;
@@ -713,8 +713,8 @@ export default {
 
 .tools-container {
   flex: 1;
-  min-width: 300px;
-  max-width: 400px;
+  /* min-width: 300px; */
+  /* max-width: 400px; */
   border: 1px solid #e6e6e6;
   border-radius: 4px;
   padding: 15px;
