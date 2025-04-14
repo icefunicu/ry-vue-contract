@@ -478,7 +478,34 @@ export default {
       img.style.width = type === "ent" ? "200px" : "150px";
       img.style.height = type === "ent" ? "200px" : "70px";
 
+      // 创建关闭按钮
+      const closeBtn = document.createElement("div");
+      closeBtn.className = "seal-close-btn";
+      closeBtn.innerHTML = '<i class="el-icon-close"></i>';
+      closeBtn.style.position = "absolute";
+      closeBtn.style.top = "-10px";
+      closeBtn.style.right = "-10px";
+      closeBtn.style.backgroundColor = "#f56c6c";
+      closeBtn.style.color = "#fff";
+      closeBtn.style.borderRadius = "50%";
+      closeBtn.style.width = "20px";
+      closeBtn.style.height = "20px";
+      closeBtn.style.display = "flex";
+      closeBtn.style.justifyContent = "center";
+      closeBtn.style.alignItems = "center";
+      closeBtn.style.cursor = "pointer";
+      closeBtn.style.zIndex = "1001";
+      closeBtn.style.fontSize = "12px";
+      closeBtn.style.boxShadow = "0 2px 4px rgba(0, 0, 0, 0.2)";
+
+      // 添加关闭按钮点击事件
+      closeBtn.addEventListener("click", (e) => {
+        e.stopPropagation(); // 阻止事件冒泡
+        this.removeSealElement(element);
+      });
+
       element.appendChild(img);
+      element.appendChild(closeBtn);
       overlay.appendChild(element);
 
       // 设置元素的初始位置
@@ -493,6 +520,33 @@ export default {
 
       // 使元素可拖动
       this.makeDraggable(element, pdfContainer);
+    },
+
+    // 移除印章或签名元素
+    removeSealElement(element) {
+      const type = element.dataset.type;
+
+      // 从DOM中移除元素
+      if (element.parentNode) {
+        element.parentNode.removeChild(element);
+      }
+
+      // 从位置列表中移除
+      if (type === "ent") {
+        const index = this.entPositionList.findIndex(
+          (p) => p.element === element
+        );
+        if (index !== -1) {
+          this.entPositionList.splice(index, 1);
+        }
+      } else {
+        const index = this.personalPositionList.findIndex(
+          (p) => p.element === element
+        );
+        if (index !== -1) {
+          this.personalPositionList.splice(index, 1);
+        }
+      }
     },
 
     // 初始化拖放功能
@@ -822,5 +876,16 @@ canvas {
   cursor: move;
   z-index: 1000;
   touch-action: none;
+}
+
+.draggable-seal .seal-close-btn,
+.draggable-signature .seal-close-btn {
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.draggable-seal:hover .seal-close-btn,
+.draggable-signature:hover .seal-close-btn {
+  opacity: 1;
 }
 </style>

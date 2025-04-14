@@ -98,7 +98,7 @@
             </el-tooltip>
           </template>
         </el-table-column>
-        <el-table-column
+        <!-- <el-table-column
           label="合同内容"
           align="center"
           prop="content"
@@ -116,7 +116,7 @@
               </div>
             </el-tooltip>
           </template>
-        </el-table-column>
+        </el-table-column> -->
         <el-table-column label="创建人" align="center" prop="createdByName" />
         <el-table-column label="合同状态" align="center" prop="status">
           <template slot-scope="scope">

@@ -78,7 +78,7 @@
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="id" align="center" prop="id" />
       <el-table-column label="模版名称" align="center" prop="name" />
-      <el-table-column label="模版内容" align="center" prop="content">
+      <!-- <el-table-column label="模版内容" align="center" prop="content">
         <template slot-scope="scope">
           <el-tooltip
             class="item"
@@ -90,7 +90,7 @@
               {{ scope.row.content }}
             </div>
           </el-tooltip>
-        </template>
+        </template> -->
       </el-table-column>
       <el-table-column
         label="操作"
